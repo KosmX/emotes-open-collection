@@ -1,7 +1,7 @@
 <?php
 
 /** This is CORE.php by KosmX
- *  Some very handy php funcion and DB manager.
+ *  Some very handy php function and DB manager.
  *  The dbSupplier will connect to a database, and allow anyone from the PHP to use the connection
  *  And with its destructor, it will auto-disconnect!
  */
