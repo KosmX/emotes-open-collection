@@ -4,7 +4,7 @@ services:
     web:
         image: nginx:latest
         ports:
-            - "4980:80"
+            - "8080:80"
         volumes:
             - $PWD/src:/host
             - $PWD/nginx:/etc/nginx/conf.d/
@@ -26,4 +26,4 @@ services:
             MYSQL_PASSWORD: iDontWork
             TZ: UTC
         ports:
-            - 4906:3306
+            - "8006:3306"
