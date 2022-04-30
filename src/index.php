@@ -1,24 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-$uri = $_SERVER['REQUEST_URI'];
-var_dump($_REQUEST);
-var_dump($_GET);
-var_dump($_POST);
-echo <<<END
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Emotes Open Collection</title>
-    <meta http-equiv="cache-control" content="no-cache, must-revalidate">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
-</head>
+use elements\PageElement;
+use elements\LiteralElement;
 
-<body>
-<h1>EOC</h1>
-<br><br>
-$uri
-</body>
+session_start();
+include 'Autoloader.php';
 
-</html>
-END;
+$page = new PageElement();
+$page->addElement(new LiteralElement("Hello page builder"));
+
+echo $page->build();
+
