@@ -10,7 +10,7 @@ class dbSupplier
 {
     private function connectToDB(): mysqli
     {
-        return new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], 'animals');
+        return new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_db']);
     }
 
 
@@ -58,24 +58,4 @@ function getURLParams(): array
 {
     parse_str(parse_url($_SERVER['REQUEST_URI'])['query'], $params);
     return $params;
-}
-
-function printPage(string $title, string $content, $css): void
-{
-    $cssRow = "";
-    if (isset($css)) {
-        $cssRow = "<link rel=\"stylesheet\" type=\"text/css\" href=\"$css\">";
-    }
-    echo <<<END
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>$title</title>
-        $cssRow
-    </head>
-    <body>
-    $content
-    </body>
-</html>
-END;
 }

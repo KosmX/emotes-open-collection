@@ -17,7 +17,7 @@ services:
             db_host: db
             db_user: iUser
             db_password: iDontWork
-            db_db: basedata
+            db_db: emotes
     db:
         image: mysql:latest
         environment:
