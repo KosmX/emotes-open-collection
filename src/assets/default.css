@@ -1,0 +1,41 @@
+.navbar {
+    position: fixed;
+    top:0;
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #2c1600;
+    left: 0px;
+}
+
+.navbar li {
+    float: left;
+    border-right: 1px solid #ccc;
+}
+li:last-child {
+     border-right: none;
+    float: right;
+ }
+
+.navbar a {
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    color: white;
+    text-decoration: none;
+}
+.navbarActive a {
+    background-color: aqua;
+    color: black;
+}
+
+.navbar a:hover {
+    background-color: antiquewhite;
+    color: black;
+}
+
+body {
+    margin-top: 70px;
+}
