@@ -5,6 +5,7 @@ session_start();
 include 'core.php';
 include 'Autoloader.php';
 include '404.php';
+include 'debug.php';
 include 'favicon.php';
 include 'pageUtils/pageTemplateUtils.php';
 
@@ -34,7 +35,15 @@ $R->get('~^\\/favicon\\.ico$~')->action(function () {
     return \favicon\serve();
 });
 
+$R->all('~^\\/u(ser)?~')->action(function () {return \user\AccountPage::getPage();});
+
+$R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
+
+
+
+// --- RESULT PROCESSING
 $result = $R->run(getCurrentPage());
+
 
 
 if ($result instanceof IElement) {

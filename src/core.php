@@ -64,3 +64,8 @@ function getCurrentPage(): string
 {
     return parse_url($_SERVER['REQUEST_URI'])['path'];
 }
+
+function getUrlArray(): array
+{
+    return explode("/", getCurrentPage());
+}

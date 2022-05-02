@@ -4,14 +4,10 @@ namespace elements;
 
 class PageElement implements IElement
 {
-    private array $elements = array();
+    use ListTrait;
 
     public string $title = "Emotes Open Collection";
     public ?string $overrideCss = null;
-
-    function addElement(IElement $element) {
-        $this->elements[] = $element;
-    }
 
     function build(): string
     {
