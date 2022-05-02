@@ -4,12 +4,15 @@ session_start();
 
 include 'core.php';
 include 'Autoloader.php';
+include '404.php';
+include 'favicon.php';
 include 'pageUtils/pageTemplateUtils.php';
 
 use elements\IElement;
 use elements\PageElement;
 use elements\LiteralElement;
 use routing\Router;
+use routing\Routes;
 
 
 $current = getCurrentPage();
@@ -21,10 +24,14 @@ if (!isset($_COOKIE['theme']) || !($_COOKIE['theme'] === 'default')) {
 
 $R = new Router();
 
-$R->all('~^\\/core(\\/.php)?$~')->action(function () {echo <<<END
+$R->all('~^\\/core(\\.php)?$~')->action(function () {echo <<<END
 status-code: 303
 location: https://kosmx.dev
 END;
+});
+
+$R->get('~^\\/favicon\\.ico$~')->action(function () {
+    return \favicon\serve();
 });
 
 $result = $R->run(getCurrentPage());
@@ -40,23 +47,16 @@ if ($result instanceof IElement) {
     $page->addElement(new LiteralElement("Hello page builder"));
 
     echo $page->build();
+} else if ($result instanceof Routes) {
+    switch ($result) {
+        case Routes::NOT_FOUND:
+            \notFound\print404();
+            break;
+        case Routes::SELF_SERVED:
+            break;
+        default:
+
+    }
 } else if ($result !== null) {
     echo $result;
-} else {
-    http_response_code(404);
-    echo <<<END
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>EOC: Page not found</title>
-        <link rel="stylesheet", href="/assets/404.css">
-        <meta http-equiv="cache-control" content="no-cache, must-revalidate">
-    </head>
-    <body>
-        <h1>Page not found</h1>
-    </body>
-</html>
-END;
-
 }
-
