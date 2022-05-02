@@ -33,7 +33,7 @@ class Router
                 return $action->exec();
             }
         }
-        return null;
+        return Routes::NOT_FOUND;
     }
 
 }

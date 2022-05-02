@@ -7,6 +7,7 @@ class PageElement implements IElement
     private array $elements = array();
 
     public string $title = "Emotes Open Collection";
+    public ?string $overrideCss = null;
 
     function addElement(IElement $element) {
         $this->elements[] = $element;
@@ -18,7 +19,12 @@ class PageElement implements IElement
         foreach ($this->elements as $element) {
             $str .= $element->build();
         }
-        $css = '/assets/'.$_COOKIE['theme'].'.css';
+        if ($this->overrideCss === null) {
+            $css = '/assets/' . $_COOKIE['theme'] . '.css';
+        } else {
+            $css = $this->overrideCss;
+        }
+
         return <<<END
 <!DOCTYPE html>
 <html lang="en">
@@ -28,6 +34,7 @@ class PageElement implements IElement
     <meta http-equiv="cache-control" content="no-cache, must-revalidate">
     <link rel="stylesheet", href="$css">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 $str

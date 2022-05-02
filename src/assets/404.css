@@ -1,19 +1,90 @@
 @font-face {
-    font-family: 'Unifont';
+    font-family: 'mojangles';
     src:
-            url('unifont-14.0.03.ttf') format('truetype');
-            url('UnifontMedium.woff2') format('woff2'),
-            url('UnifontMedium.woff') format('woff');
+            url('mojang.ttf') format('truetype');
+            url('mojang.woff2') format('woff2'),
+            url('mojang.woff') format('woff');
+}
+
+.screen {
+    height: 100vh;
+    display: flex;
+    align-self: center;
+    align-items: center;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    vertical-align: center;
 }
 
 body {
-    font-family: 'Unifont', monospace;
-    font-weight: 500;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-family: 'mojangles', monospace;
     font-style: normal;
+    text-align: center;
+    margin: 0;
+    color: #fcfcfc;
+    background:
+            linear-gradient(
+                    rgba(40, 0, 0, 0.6),
+                    rgba(40, 0, 0, 0.6)),
+            url("Screenshot_mc.png") #2c1600 no-repeat;
+    background-size: cover;
 }
 
 h1 {
+    line-height: 50px;
     text-align: center;
-    color: gray;
-    line-height: 40vmax;
+    font-size: 40px;
+    text-shadow: 6px 6px #3e3e3e;
 }
+
+h2 {
+    text-align: center;
+    font-size: 20px;
+    margin: 10px;
+    text-shadow: 3px 3px #3e3e3e;
+}
+
+.title {
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: normal;
+}
+
+.yellow {
+    color: #fcfc54;
+    text-shadow: #3e3e15;
+}
+
+.container {
+    position: relative;
+    line-height: 0;
+    width: 500px;
+    height: 50px;
+    background: url("mc_buttons.png") no-repeat left top;
+    background-size: cover;
+    image-rendering: pixelated;
+    margin: 10px;
+}
+
+a:link, a:visited, a:hover {
+    color: #fcfcfc;
+
+    font-size: 18px;
+    text-shadow: 2px 2px #3e3e3e;
+}
+
+.container:hover {
+    background-position: 0 -50px;
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
