@@ -6,13 +6,13 @@ services:
         ports:
             - "8080:80"
         volumes:
-            - $PWD/src:/host
-            - $PWD/nginx:/etc/nginx/conf.d/
-            - $PWD/log:/var/log/nginx/
+            - ./src:/host
+            - ./nginx:/etc/nginx/conf.d/
+            - ./log:/var/log/nginx/
     php:
         build: ./docker_images/php
         volumes:
-            - $PWD/src:/host
+            - ./src:/host
         environment:
             db_host: db
             db_user: iUser
