@@ -6,8 +6,10 @@ include 'core.php';
 include 'Autoloader.php';
 include 'pageUtils/pageTemplateUtils.php';
 
+use elements\IElement;
 use elements\PageElement;
 use elements\LiteralElement;
+use routing\Router;
 
 
 $current = getCurrentPage();
@@ -17,11 +19,30 @@ if (!isset($_COOKIE['theme']) || !($_COOKIE['theme'] === 'default')) {
 
 }
 
-$page = new PageElement();
+$R = new Router();
 
-$page->addElement(utils\getDefaultHeader($current));
+$R->all('~^\\/core(\\/.php)?$~')->action(function () {echo <<<END
+status-code: 303
+location: https://kosmx.dev
+END;
+});
 
-$page->addElement(new LiteralElement("Hello page builder"));
+$result = $R->run(getCurrentPage());
 
-echo $page->build();
+
+if ($result instanceof IElement) {
+    $page = new PageElement();
+
+    $page->addElement(utils\getDefaultHeader($current));
+
+    $page->addElement($result);
+
+    $page->addElement(new LiteralElement("Hello page builder"));
+
+    echo $page->build();
+} else if ($result !== null) {
+    echo $result;
+} else {
+    http_response_code(404);
+}
 

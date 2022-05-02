@@ -62,5 +62,5 @@ function getURLParams(): array
 
 function getCurrentPage(): string
 {
-    return ltrim(parse_url($_SERVER['REQUEST_URI'])['path'], '/');
+    return parse_url($_SERVER['REQUEST_URI'])['path'];
 }
