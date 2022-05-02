@@ -48,7 +48,7 @@ if ($result instanceof IElement) {
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>EOC: Page not found</title>
+        <title>EOC: Page not found!</title>
         <link rel="stylesheet", href="/assets/404.css">
         <meta http-equiv="cache-control" content="no-cache, must-revalidate">
     </head>
