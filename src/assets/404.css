@@ -1,0 +1,18 @@
+@font-face {
+    font-family: 'Unifont';
+    src:
+            url('unifont-14.0.03.ttf') format('truetype');
+            url('UnifontMedium.woff2') format('woff2'),
+            url('UnifontMedium.woff') format('woff');
+}
+
+body {
+    font-family: 'Unifont', monospace;
+    font-weight: 500;
+    font-style: normal;
+}
+
+h1 {
+    text-align: center;
+    color: gray;
+}

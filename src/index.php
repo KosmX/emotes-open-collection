@@ -44,5 +44,19 @@ if ($result instanceof IElement) {
     echo $result;
 } else {
     http_response_code(404);
+    echo <<<END
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>EOC: Page not found</title>
+        <link rel="stylesheet", href="/assets/404.css">
+        <meta http-equiv="cache-control" content="no-cache, must-revalidate">
+    </head>
+    <body>
+        <h1>Page not found</h1>
+    </body>
+</html>
+END;
+
 }
 
