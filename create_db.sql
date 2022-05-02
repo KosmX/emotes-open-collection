@@ -5,7 +5,6 @@ create table if not exists users
 (
     id             int auto_increment primary key,
     email          nvarchar(128)        not null,
-    authentication long                 not null,
     username       nvarchar(128) unique not null,
     displayName    nvarchar(128)
 );

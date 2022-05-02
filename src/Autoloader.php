@@ -4,7 +4,7 @@
  */
 class Autoloader
 {
-    public static function register()
+    public static function register(): void
     {
         spl_autoload_register(function ($class) {
             $file = str_replace('\\', DIRECTORY_SEPARATOR, $class).'.php';
