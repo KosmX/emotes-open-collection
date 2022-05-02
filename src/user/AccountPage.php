@@ -26,11 +26,18 @@ class AccountPage
         if (isset($_SESSION['user'])) {
             //TODO USER PROFILE PAGE
         } else {
-            if (!isset($_SESSION['registration'])) {
-                $_SESSION['registration'] = new RegisterUser();
+            if (false && isset($_SESSION['registration'])) {
+                $registration = unserialize($_SESSION['registration']);
+            } else {
+                $registration = new RegisterUser();
             }
-            return $_SESSION['registration']->continue();
+            $ret = $registration->continue();
+
+            $_SESSION['registration'] = serialize($registration);
+
+            return $ret;
         }
+        return null;
     }
 
 }

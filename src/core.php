@@ -67,5 +67,5 @@ function getCurrentPage(): string
 
 function getUrlArray(): array
 {
-    return explode("/", getCurrentPage());
+    return explode("/", substr(getCurrentPage(), 1));
 }

@@ -4,7 +4,7 @@ namespace elements;
 
 trait Taggable
 {
-    protected string $class;
+    protected ?string $class = null;
 
     /**
      * @param string $class
@@ -15,6 +15,10 @@ trait Taggable
     }
 
     protected function tag(string $data, string $divisor = "span"): string {
-        return "<$divisor class=\"$this->class\">$data</$divisor>";
+        if ($this->class !== null) {
+            return "<$divisor class=\"$this->class\">$data</$divisor>";
+        } else {
+            return "<$divisor>$data</$divisor>";
+        }
     }
 }

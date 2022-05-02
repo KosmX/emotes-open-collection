@@ -35,7 +35,7 @@ $R->get('~^\\/favicon\\.ico$~')->action(function () {
     return \favicon\serve();
 });
 
-$R->all('~^\\/u(ser)?~')->action(function () {return \user\AccountPage::getPage();});
+$R->all('~^\\/u(ser)?$~')->action(function () {return \user\AccountPage::getPage();});
 
 $R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
 
@@ -64,8 +64,10 @@ if ($result instanceof IElement) {
         case Routes::SELF_SERVED:
             break;
         default:
-
+            echo "unimplemented route: $result";
     }
 } else if ($result !== null) {
     echo $result;
+} else {
+    \notFound\print404();
 }
