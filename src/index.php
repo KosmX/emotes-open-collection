@@ -15,29 +15,20 @@ use elements\LiteralElement;
 use routing\Router;
 use routing\Routes;
 
+$current = '';
 
-$current = getCurrentPage();
-
-if (!isset($_COOKIE['theme']) || !($_COOKIE['theme'] === 'default')) {
-    setcookie('theme', 'default');//, domain: '.kosmx.dev');
-
-}
 
 $R = new Router();
 
-$R->all('~^\\/core(\\.php)?$~')->action(function () {echo <<<END
-status-code: 303
-location: https://kosmx.dev
-END;
-});
 
 $R->get('~^\\/favicon\\.ico$~')->action(function () {
     return \favicon\serve();
 });
 
-$R->all('~^\\/u(ser)?$~')->action(function () {return \user\AccountPage::getPage();});
+$R->all('~^\\/u(ser)?(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return \user\AccountPage::getPage();});
 
 $R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
+$R->get('~^$~')->action(function () {return new LiteralElement((string)file_get_contents('index.html'));});
 
 
 
@@ -53,7 +44,7 @@ if ($result instanceof IElement) {
 
     $page->addElement($result);
 
-    $page->addElement(new LiteralElement("Hello page builder"));
+    //$page->addElement(new LiteralElement("Hello page builder"));
 
     echo $page->build();
 } else if ($result instanceof Routes) {

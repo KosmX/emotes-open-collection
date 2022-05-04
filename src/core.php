@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /** This is CORE.php by KosmX
  *  Some very handy php function and DB manager.
@@ -62,10 +62,22 @@ function getURLParams(): array
 
 function getCurrentPage(): string
 {
-    return parse_url($_SERVER['REQUEST_URI'])['path'];
+    return rtrim(parse_url($_SERVER['REQUEST_URI'])['path'], '/');
 }
 
 function getUrlArray(): array
 {
     return explode("/", substr(getCurrentPage(), 1));
+}
+
+function cookieOrDefault(string $cookie, string $default, bool $setIfNull): string
+{
+    if (isset($_COOKIE[$cookie])) {
+        return $_COOKIE[$cookie];
+    } else {
+        if ($setIfNull) {
+            setcookie($cookie, $default);
+        }
+        return $default;
+    }
 }

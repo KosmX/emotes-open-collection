@@ -16,7 +16,7 @@ class PageElement implements IElement
             $str .= $element->build();
         }
         if ($this->overrideCss === null) {
-            $css = '/assets/' . $_COOKIE['theme'] . '.css';
+            $css = '/assets/' . cookieOrDefault('theme', 'default', true) . '.css';
         } else {
             $css = $this->overrideCss;
         }
