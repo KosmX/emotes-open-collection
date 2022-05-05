@@ -4,7 +4,16 @@ use elements\IElement;
 
 class Router
 {
+    private int $depth;
+
     private array $map = array();
+
+    public static string $EMPTY = '~^$~';
+
+    public function __construct(int $depth = -1)
+    {
+        $this->depth = $depth;
+    }
 
     public function get(string $regex): Route
     {
@@ -28,6 +37,11 @@ class Router
     }
 
     public function run(string $path): ?object {
+        if ($this->depth > 0) {
+            $path = implode('/', array_slice(explode('/', $path), $this->depth + 1 )); //It works with depth, but is not slower
+            //Compensate the leaning / [forward slash]
+        }
+        #echo "path:$path ";
         foreach ($this->map as $action) {
             if ($action->test($path)) {
                 return $action->exec();

@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use routing\Routes;
+
 /** This is CORE.php by KosmX
  *  Some very handy php function and DB manager.
  *  The dbSupplier will connect to a database, and allow anyone from the PHP to use the connection
@@ -80,4 +82,9 @@ function cookieOrDefault(string $cookie, string $default, bool $setIfNull): stri
         }
         return $default;
     }
+}
+
+function redirect(string $path): Routes {
+    header("Location: $path");
+    return Routes::SELF_SERVED;
 }

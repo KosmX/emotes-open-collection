@@ -16,9 +16,9 @@ class LiteralEntry implements IEntry {
     function toStr(): string
     {
         if ($this->isCurrent) {
-            return "<li class='navbarActive'><a href=\"$this->target\">$this->literal</a></li>";
+            return "<li class='navbarActive'><a href=\"\\$this->target\">$this->literal</a></li>";
         } else {
-            return "<li><a href=\"$this->target\">$this->literal</a></li>";
+            return "<li><a href=\"\\$this->target\">$this->literal</a></li>";
         }
     }
 

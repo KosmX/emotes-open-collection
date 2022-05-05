@@ -15,5 +15,17 @@ function debugger(): \routing\Routes
     $form = new \elements\SubmitConstantButton(new \elements\LiteralElement("asdf"), $a, "get", "debug.php");
     echo $form->build();
 
+
+    $str = 'route/to/the/pages';
+
+    $idx = implode('/', array_slice(explode('/', $str), 4 ));
+
+    var_dump($idx);
+
+
     return \routing\Routes::SELF_SERVED;
+}
+
+function trimUrl(int $depth) {
+
 }

@@ -2,8 +2,13 @@
 
 namespace elements;
 
-trait SimpleTable
+class SimpleTable implements IElement
 {
-    use ListTrait;
+    use TableTrait;
+    public ?string $class = null;
 
+    function build(): string
+    {
+        return $this->buildTable($this->class);
+    }
 }

@@ -15,7 +15,8 @@ trait TableTrait
     {
         $rows = '';
         foreach ($this->rows as $row) {
-            $rows .= "<tr>$row</tr>";
+            $r = $row->build();
+            $rows .= "<tr>$r</tr>";
         }
         if ($tag === null) {
             $class = '';
