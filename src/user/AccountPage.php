@@ -27,8 +27,11 @@ class AccountPage
         $R = new Router(1);
 
         $R->all(Router::$EMPTY)->action(function () {return self::userOverview();});
+        $R->all('~^auth\\/[^\\/]+$~')->action(function () {return self::userOverview();});
 
         $R->all('~^register(\\/|$)~')->action(function () {return self::registerUser();});
+
+        #$R->get('~^oauth\\/~')->action(function () {return self::registerUser();});
 
         //$R->all(`~%~`);
         return $R->run(getCurrentPage());

@@ -8,7 +8,17 @@ interface IAuthMethod
 {
     function getAuthButton(): IElement;
 
-    function authCallback(): bool;
+    /**
+     * @return bool|IElement true if success, false if failed auth (just someone typed the URL), IElement if error containing the error text
+     * @throws IllegalStateException if auth state does not match
+     */
+    function authCallback(): mixed;
+
+    /**
+     * If auth was success, we can have the corresponding user ID! Let's get it from GH
+     * @return int
+     */
+    function getVerifiedUserID(): int;
 }
 
 

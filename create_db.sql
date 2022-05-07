@@ -9,6 +9,24 @@ create table if not exists users
     displayName    nvarchar(128)
 );
 
+create table if not exists auths
+(
+    id  int primary key auto_increment,
+    name varchar(32) not null
+);
+
+create table userAccounts
+(
+    userID  int not null,
+    authID int not null,
+    platformUserID int unique not null,
+    primary key (userID, authID),
+    constraint validUserID foreign key (userID) references users(id),
+    constraint validAuthID foreign key (authID) references auths(id)
+);
+
+GRANT ALL ON emotes.* TO iUser@`%`; # Grant access to iUser
+
 create table if not exists format
 (
     formatID        varchar(16) primary key,
@@ -23,20 +41,8 @@ create table if not exists emotes
     emoteOwner  int           not null,
     name        nvarchar(128) not null,
     description nvarchar(128) default '',
-    author      nvarchar(128) null
-);
-
-create table if not exists emoteFiles
-(
-    id         int auto_increment primary key,
-    fileOwner  int           not null,
-    filePath   nvarchar(256) not null unique, # Files will be stored in hashed names/paths
-    fileName   nvarchar(128),
-    fileFormat varchar(16),
-    emote      int not null,
-    constraint fileMustHaveOwner foreign key (fileOwner) references users (id),
-    constraint fileMustHaveFormat foreign key (fileFormat) references format (formatID),
-    constraint fileMustBelongToEmote foreign key (emote) references emotes (id)
+    author      nvarchar(128) null,
+    data        VARBINARY(-1) not null
 );
 
 create table if not exists likes (
