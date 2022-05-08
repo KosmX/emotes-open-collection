@@ -4,14 +4,18 @@ namespace user;
 include 'auth/IAuthMethod.php';
 
 use elements\ErrorTag;
+use elements\form\Input;
 use elements\IElement;
 use elements\LiteralElement;
+use elements\SimpleForm;
 use elements\SimpleList;
 use elements\SimpleTable;
 use elements\TableRow;
+use JetBrains\PhpStorm\ArrayShape;
 use routing\Router;
 use routing\Routes;
 use user\auth\GitHub;
+use user\auth\IAuthMethod;
 use user\auth\IllegalStateException;
 
 class RegisterUser
@@ -19,6 +23,9 @@ class RegisterUser
 
     private int $step = 0;
     private GitHub $gitHubAuth;
+
+    #[ArrayShape(['id' => "int", 'name' => "string", 'displayname' => "string", 'email' => "string"])]
+    private ?array $userData;
 
     /*
     public function __serialize(): array
@@ -81,10 +88,10 @@ END
             return $this->welcomeNewPeople($listElement);
         }
         if ($ret === true) {
-            $userID = $auth->getVerifiedUserID();
+            $userData = $auth->getVerifiedUserData();
             $isUserQuery = getDB()->prepare("SELECT uA.userID from auths join userAccounts uA on auths.id = uA.authID where auths.name = ? and uA.platformUserID = ?");
-            $method = 'gh';
-            $isUserQuery->bind_param('si', $method, $userID);
+            $method = $auth->getName();
+            $isUserQuery->bind_param('si', $method, $userData['id']);
             $isUserQuery->execute();
 
             $res = $isUserQuery->get_result();
@@ -94,7 +101,10 @@ END
             if($res->num_rows == 1) {
                 //User exists, we are good
             } else {
+                $this->userData = $userData;
                 $this->step = 1;
+                header('/u');
+                return $this->step1();
             }
 
         } else {
@@ -134,7 +144,19 @@ END
 
     private function step1(): IElement
     {
+        $content = new SimpleList();
 
-        return new LiteralElement("hehe");
+        $content->addElement(new LiteralElement(<<<END
+<h1>You are not registered.</h1>
+<h2>Please verify/check the form below, and press <bold>register</bold> to finish your account</h2>
+<h2>Public field has <span style="color: darkred">red</span> frame</h2>
+END));
+
+        $registerForm = new SimpleForm("POST", "/u");
+        $registerForm->addElement(new Input(''));
+
+
+
+        return $content;
     }
 }

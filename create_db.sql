@@ -1,3 +1,5 @@
+drop database if exists emotes;
+
 create database if not exists emotes;
 use emotes;
 
@@ -27,22 +29,24 @@ create table userAccounts
 
 GRANT ALL ON emotes.* TO iUser@`%`; # Grant access to iUser
 
+/* If I create a formatter service, it won't be needed
 create table if not exists format
 (
     formatID        varchar(16) primary key,
     formatExtension varchar(16) unique
-);
+);*/
 
 create table if not exists emotes
 (
     id          int auto_increment primary key,
-    hashLow     long          not null,
-    hashHigh    long          not null,
+    hashLow     bigint        not null,
+    hashHigh    bigint        not null,
     emoteOwner  int           not null,
     name        nvarchar(128) not null,
-    description nvarchar(128) default '',
+    description nvarchar(256) default '',
     author      nvarchar(128) null,
-    data        VARBINARY(-1) not null
+    data        MEDIUMBLOB    not null,
+    unique (hashHigh, hashLow) #128 bit UUID
 );
 
 create table if not exists likes (

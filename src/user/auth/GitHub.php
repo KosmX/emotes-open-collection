@@ -6,6 +6,7 @@ use elements\ErrorTag;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SubmitConstantButton;
+use JetBrains\PhpStorm\ArrayShape;
 
 class GitHub implements IAuthMethod
 {
@@ -33,15 +34,12 @@ END
         $params['client_id'] = self::$clientID;
         $params['redirect_uri'] = "https://emotes.kosmx.dev/u/auth/gh";
         $params['state'] = $this->state;
-        $params['scope'] = "read:user";#, user:email";
+        $params['scope'] = "read:user, user:email";#, user:email";
         return new SubmitConstantButton($ghLogin, $params, "get", "https://github.com/login/oauth/authorize");
     }
 
     function authCallback(): mixed
     {
-        if ($this->token != null){// && $this->tokenType != null) {
-            return true;
-        }
         if (isset($_GET['code'])) {
             $state = $_GET['state'] ?? '';
             if ($state == $this->state) {
@@ -83,7 +81,8 @@ END
         return false;
     }
 
-    function getVerifiedUserID(): int
+    #[ArrayShape(['id' => "int", 'name' => "string", 'displayname' => "string", 'email' => "string"])]
+    function getVerifiedUserData(): array
     {
         if ($this->token === null) throw new IllegalStateException("UserID without token");
         $url = 'https://api.github.com/user';
@@ -101,6 +100,17 @@ END
         var_dump($result);
         $result = json_decode($result, true);
         var_dump($result);
-        return (int)$result['id'];
+
+        return array(
+            'id' => (int)$result['id'],
+            'name' => $result['login'],
+            'displayname' => $result['name'],
+            'email' => $result['email']
+        );
+    }
+
+    function getName(): string
+    {
+        return 'gh';
     }
 }

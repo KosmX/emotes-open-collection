@@ -3,6 +3,7 @@
 namespace user\auth;
 
 use elements\IElement;
+use JetBrains\PhpStorm\ArrayShape;
 
 interface IAuthMethod
 {
@@ -16,9 +17,19 @@ interface IAuthMethod
 
     /**
      * If auth was success, we can have the corresponding user ID! Let's get it from GH
-     * @return int
+     * @return array the user data:
+     * userid => unique user id, used to connect account
+     * username => the current name of the user
+     * displayname => the current display name of the user, always specify, even if the same as username
+     * email => the email address of the user, please specify
      */
-    function getVerifiedUserID(): int;
+    #[ArrayShape(['id' => "int", 'name' => "string", 'displayname' => "string", 'email' => "string"])]
+    function getVerifiedUserData(): array;
+
+    /**
+     * @return string The DB name of the method
+     */
+    function getName(): string;
 }
 
 
