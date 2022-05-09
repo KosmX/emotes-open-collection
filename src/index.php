@@ -37,6 +37,8 @@ $R->all('~^\\/u(ser)?$~')->action(function () use (&$current) {
     else return AccountPage::getPage();
 });
 
+$R->all('~^\\/settings\\/(editP|p)rofile(\\/|$)~')->action(function () use ($current) {$current = 'user'; return AccountPage::userSettings();});
+
 $R->get('~^\\/logout$~')->action(function () {return AccountPage::logout();});
 
 $R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});

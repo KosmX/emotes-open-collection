@@ -86,7 +86,72 @@ FORM);
     /**
      * @return bool if registration successful
      */
-    public function register(int $userID, string $authName, string $token): mixed {
+    public function register(int $userID, string $authName, string $token): bool
+    {
+        if ($this->getParamsFromPost()) {
+
+            getDB()->begin_transaction();
+            $lockAndCheckUname = getDB()->prepare("SELECT * from users where username = ? FOR UPDATE;"); //Lock the username
+            $lockAndCheckUname->bind_param("s", $this->uname);
+            $lockAndCheckUname->execute();
+            $res = $lockAndCheckUname->get_result();
+
+            if ($res->num_rows != 0) {
+                $this->usernameInvalid = 'The username is already taken, please choose another one';
+                getDB()->rollback(); //We did nothing, close the transaction
+                return false;
+            } else {
+                $addUser = getDB()->prepare('INSERT INTO users (username, displayName, email, isEmailPublic, theCheckbox) VALUES (?, ?, ?, ?, ?)');
+                $addUser->bind_param("sssii", $this->uname, $this->displayName, $this->email, $this->publicEmail, $this->theCheckbox);
+                $addUser->execute();
+                $getIndex = $addUser->insert_id; //The ID of our new user!
+                $addAuth = getDB()->prepare('INSERT INTO userAccounts (userID, authID, platformUserID, token) SELECT LAST_INSERT_ID(), auths.id, ?, ? FROM auths where auths.name = ?');
+                $addAuth->bind_param('iss', $userID, $token, $authName);
+                $addAuth->execute();
+                getDB()->commit();
+                $this->userID = $getIndex;
+                $_SESSION['user'] = serialize($this->userID);
+                return true;
+            }
+        } else {
+            return false; //What are you doing?!
+        }
+    }
+
+    public function updateProfile(): bool {
+        if ($this->getParamsFromPost()) {
+            if ($this->uname !== UserHelper::getCurrentUser()->uname) {
+                getDB()->begin_transaction();
+                $lockAndCheckUname = getDB()->prepare("SELECT * from users where username = ? FOR UPDATE;"); //Lock the username
+                $lockAndCheckUname->bind_param("s", $this->uname);
+                $lockAndCheckUname->execute();
+                $res = $lockAndCheckUname->get_result();
+                if ($res->num_rows != 0) {
+                    $this->usernameInvalid = 'The username is already taken, please choose another one';
+                    getDB()->rollback(); //We did nothing, close the transaction
+                    return false;
+                } else {
+                    $update = getDB()->prepare('UPDATE users SET username = ?, displayName = ?, email = ?, isEmailPublic = ?, theCheckbox = ? where id = ?;');
+                    $update->bind_param('sssiii', $this->uname, $this->displayName, $this->email, $this->publicEmail, $this->theCheckbox, $this->userID);
+                    $update->execute();
+                    getDB()->commit();
+                    self::$INSTANCE = null;
+                    return true;
+                }
+            } else {
+                $update = getDB()->prepare('UPDATE users SET displayName = ?, email = ?, isEmailPublic = ?, theCheckbox = ? where id = ?;');
+                $update->bind_param('ssiii',$this->displayName, $this->email, $this->publicEmail, $this->theCheckbox, $this->userID);
+                $update->execute();
+                getDB()->commit();
+                self::$INSTANCE = null;
+                return true;
+            }
+        } else return false;
+    }
+
+    private function getParamsFromPost(): bool
+    {
+
         $this->usernameInvalid = null;
         if (isset($_POST['username']) && isset($_POST['email'])) {
             $this->uname = $_POST['username'];
@@ -110,32 +175,15 @@ FORM);
                 return false;
             }
 
-            getDB()->begin_transaction();
-            $lockAndCheckUname = getDB()->prepare("SELECT * from users where username = ? FOR UPDATE;"); //Lock the username
-            $lockAndCheckUname->bind_param("s", $this->uname);
-            $lockAndCheckUname->execute();
-            $res = $lockAndCheckUname->get_result();
-
-            if ($res->num_rows != 0) {
-                $this->usernameInvalid = 'The username is already taken, please choose another one';
-                getDB()->rollback(); //We did nothing, close the transaction
+            if (preg_match('~^[a-z\\d]+$~', $this->uname) == 0) {
+                //$this->usernameInvalid = 'Username is verified on the server. good try!'; //The standard form does not allow invalid usernames, whoever finds it, they must have done the post manually.
+                $this->usernameInvalid = "Please choose a valid username, only contains small letters and numbers";
                 return false;
-            } else {
-                $addUser = getDB()->prepare('INSERT INTO users (username, displayName, email, isEmailPublic, theCheckbox) VALUES (?, ?, ?, ?, ?)');
-                $addUser->bind_param("sssbb", $this->uname, $this->displayName, $this->email, $this->publicEmail, $this->theCheckbox);
-                $addUser->execute();
-                $getIndex = $addUser->insert_id; //The ID of our new user!
-                $addAuth = getDB()->prepare('INSERT INTO userAccounts (userID, authID, platformUserID, token) SELECT LAST_INSERT_ID(), auths.id, ?, ? FROM auths where auths.name = ?');
-                $addAuth->bind_param('iss', $userID, $token, $authName);
-                $addAuth->execute();
-                getDB()->commit();
-                $this->userID = $getIndex;
-                $_SESSION['user'] = serialize($this->userID);
-                return true;
             }
-        } else {
-            return false; //What are you doing?!
+
+            return true;
         }
+        return false;
     }
 
     private static function checked(bool $ch): string

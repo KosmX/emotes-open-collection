@@ -1,10 +1,13 @@
 <?php
 namespace user;
 
+use elements\AlertTag;
 use elements\IElement;
 use elements\LiteralElement;
+use elements\PageElement;
 use elements\SimpleList;
 use pageUtils\UserHelper;
+use routing\Method;
 use routing\Router;
 use routing\Routes;
 
@@ -110,6 +113,29 @@ END
             UserHelper::logout();
             return new LiteralElement("<h2>Goodbye!</h2>");
         }
+    }
+
+    public static function userSettings(): IElement|Routes
+    {
+        if (self::getAccountPage() == null) return Routes::NOT_FOUND;
+
+        $user = clone(UserHelper::getCurrentUser());
+
+
+        $elements = new SimpleList();
+        if (Method::POST->isActive()) {
+            if($user->updateProfile()) {
+                $elements->addElement( new AlertTag(new LiteralElement("Successfully saved"), 'alert-success'));
+            }
+        }
+
+
+        $elements->addElement(new LiteralElement("<h1>Edit profile</h1>"));
+        $elements->addElement($user->getForm('/settings/profile'));
+
+        $_SESSION['profEdit'] = serialize($user);
+
+        return $elements;
     }
 
 }

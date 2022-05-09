@@ -4,7 +4,7 @@ namespace user;
 include 'auth/IAuthMethod.php';
 
 use elements\bootstrap\HOrdered;
-use elements\ErrorTag;
+use elements\AlertTag;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
@@ -84,7 +84,7 @@ class RegisterUser
             //state mismatch, timeout or third-party
             http_response_code(498); //Note somehow the mismatched token
             $listElement = new SimpleList();
-            $listElement->addElement(new ErrorTag(new LiteralElement(<<<END
+            $listElement->addElement(new AlertTag(new LiteralElement(<<<END
 Mismatched oauth state, probably you waited for too long, please try again
 END
             )));

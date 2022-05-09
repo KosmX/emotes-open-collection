@@ -10,6 +10,7 @@ function debugger(): \routing\Routes
     var_dump($_SERVER['HTTP_HOST']);
     var_dump($_SESSION);
 
+    var_dump(($_POST['public-email'] ?? '') == '1');
 
     $a = array();
     $a['a'] = "b";

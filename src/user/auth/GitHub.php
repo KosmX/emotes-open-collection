@@ -2,7 +2,7 @@
 
 namespace user\auth;
 
-use elements\ErrorTag;
+use elements\AlertTag;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SubmitConstantButton;
@@ -68,7 +68,7 @@ END
                         "bad_verification_code" => $result['error_description'],
                         default => "Unknown error occurred:$result[error],$result[error_description]"
                     };
-                    return new ErrorTag(new LiteralElement($msg));
+                    return new AlertTag(new LiteralElement($msg));
                 }
 
                 if (isset($result['access_token'])) {
