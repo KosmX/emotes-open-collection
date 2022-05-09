@@ -9,6 +9,7 @@ use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
 use JetBrains\PhpStorm\ArrayShape;
+use pageUtils\UserHelper;
 use routing\Router;
 use routing\Routes;
 use user\auth\GitHub;
@@ -41,7 +42,7 @@ class RegisterUser
     }*/
 
     public function __construct() {
-        $this->gitHubAuth = new GitHub();
+        $this->gitHubAuth = new GitHub('/register/auth/gh');
     }
 
     public function continue(): ?object
@@ -64,7 +65,10 @@ class RegisterUser
         return $R->run(getCurrentPage());
     }
 
-    private function oauthCallback(): IElement
+    /**
+     * @return IElement|Routes stuff
+     */
+    private function oauthCallback(): IElement|Routes
     {
 
         $auth = getUrlArray()[2];
@@ -98,11 +102,13 @@ END
 
 
             if($res->num_rows == 1) {
-                return AccountPage::getAccountPage();
+                $_SESSION['user'] = serialize($res->fetch_array()['userID']);
+                redirect('/u');
+                return AccountPage::getAccountPage(UserHelper::getCurrentUser());
             } else {
                 $this->userData = $userData;
                 $this->step = 1;
-                header('/u');
+                header('/register');
                 $this->authMethod = $auth;
                 return $this->register();
             }
@@ -158,7 +164,7 @@ END
 <h4>Please verify/check the form below, and press <bold>register</bold> to finish your account</h4>
 END));
 
-        $form = $this->userData['user']->getForm('/u/register', 'Register');
+        $form = $this->userData['user']->getForm('/register', 'Register');
 
         $content->addElement($form);
         return $content;
@@ -167,7 +173,6 @@ END));
     private function tryRegisterUser(): IElement {
         if ($this->userData['user']->register($this->userData['id'], $this->authMethod->getName(), $this->authMethod->getToken())) {
             header('/u');
-            $_SESSION['user'] = serialize($this->userData);
             return AccountPage::getAccountPage();
         } else {
             return $this->displayRegister();

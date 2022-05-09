@@ -8,6 +8,7 @@ function debugger(): \routing\Routes
     var_dump($_GET);
     var_dump($_POST);
     var_dump($_SERVER['HTTP_HOST']);
+    var_dump($_SESSION);
 
 
     $a = array();

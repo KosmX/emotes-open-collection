@@ -9,14 +9,14 @@ use user\RegisterUser;
 
 class UserHelper
 {
-    private static UserHelper $INSTANCE;
+    private static ?UserHelper $INSTANCE = null;
 
     public string $uname;
     public string $displayName;
     public string $email;
     public bool $publicEmail;
     public bool $theCheckbox;
-    private ?int $userID; //non null until registered,
+    public ?int $userID; //non null until registered,
 
     private ?string $usernameInvalid = null;
 
@@ -30,7 +30,7 @@ class UserHelper
      */
     public function __construct(string $uname, ?string $displayName, ?string $email, bool $publicEmail = false, bool $theCheckbox = false, ?int $userID = null)
     {
-        $this->uname = $uname;
+        $this->uname = strtolower($uname);
         $this->displayName = $displayName ?? $uname;
         $this->email = $email ?? '';
         $this->publicEmail = $publicEmail;
@@ -124,11 +124,13 @@ FORM);
                 $addUser = getDB()->prepare('INSERT INTO users (username, displayName, email, isEmailPublic, theCheckbox) VALUES (?, ?, ?, ?, ?)');
                 $addUser->bind_param("sssbb", $this->uname, $this->displayName, $this->email, $this->publicEmail, $this->theCheckbox);
                 $addUser->execute();
-                //$getIndex = $addUser->insert_id; //The ID of our new user!
+                $getIndex = $addUser->insert_id; //The ID of our new user!
                 $addAuth = getDB()->prepare('INSERT INTO userAccounts (userID, authID, platformUserID, token) SELECT LAST_INSERT_ID(), auths.id, ?, ? FROM auths where auths.name = ?');
                 $addAuth->bind_param('iss', $userID, $token, $authName);
                 $addAuth->execute();
                 getDB()->commit();
+                $this->userID = $getIndex;
+                $_SESSION['user'] = serialize($this->userID);
                 return true;
             }
         } else {
@@ -152,18 +154,61 @@ END;
 
     }
 
-    private static function getUser(): ?UserHelper {
-        return null;
+    public static function getCurrentUser(): ?UserHelper {
+        if (self::$INSTANCE == null && isset($_SESSION['user'])) {
+            /** @var int $userID */
+            $userID = unserialize($_SESSION['user']);
+            if (!is_int($userID)) {
+                unset($_SESSION['user']);
+                return null;
+            }
+
+            $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox FROM users where id = ? limit 1");
+            $query->bind_param('i', $userID);
+            $query->execute();
+            $res = $query->get_result();
+
+            if ($res->num_rows == 1) {
+                $row = $res->fetch_array();
+            self::$INSTANCE = new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id']);
+            } else {
+                unset($_SESSION['user']);
+            }
+        }
+        return self::$INSTANCE;
     }
 
     public static function getTheme(): string {
-        $user = self::getUser();
+        $user = self::getCurrentUser();
         if ($user == null) {
             return '/bootstrap/css/bootstrap.css';
         } else {
             return '/bootstrap/css/bootstrap.css';
             //TODO user-specific information
         }
+    }
+
+    /**
+     * @param string $name Searched users name
+     * @return UserHelper|null User or null if not found
+     */
+    public static function getUser(string $name): ?UserHelper {
+        $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox FROM users where username = ? limit 1");
+        $query->bind_param('s', $name);
+        $query->execute();
+        $res = $query->get_result();
+
+        if ($res->num_rows == 1) {
+            $row = $res->fetch_array();
+            return new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id']);
+        } else {
+            return null;
+        }
+    }
+
+    public static function logout():void {
+        self::$INSTANCE = null;
+        unset($_SESSION['user']);
     }
 
 }

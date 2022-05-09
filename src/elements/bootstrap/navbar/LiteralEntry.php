@@ -15,14 +15,10 @@ class LiteralEntry implements IEntry {
 
     function toStr(): string
     {
-        $extra = '';
-        if ($this->mode != '') {
-            $extra = " $this->mode";
-        }
 
         return <<<END
         <li class="nav-item">
-          <a class="nav-link$extra" href="\\$this->target">$this->literal</a>
+          <a class="nav-link$this->mode" href="\\$this->target">$this->literal</a>
         </li>
 END;
 
@@ -35,11 +31,11 @@ END;
 
     function setCurrent(): void
     {
-        $this->mode = 'active';
+        $this->mode .= ' active';
     }
 
     function disable(): void
     {
-        $this->mode = 'disabled';
+        $this->mode .= ' disabled';
     }
 }

@@ -28,6 +28,6 @@ class SubmitConstantButton extends AbstractSimplestElement
             $inputs .= "<input type='hidden' name='$key' value='$entry'>";
         }
         $p = parent::build();
-        return "<form action='$this->action' method='$this->method'> $inputs <button type='submit'> $p </button> </form>";
+        return "<form action='$this->action' method='$this->method'> $inputs <button class='btn btn-light' type='submit'> $p </button> </form>";
     }
 }
