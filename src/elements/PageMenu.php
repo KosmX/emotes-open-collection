@@ -15,7 +15,7 @@ class PageMenu implements IElement
     function setCurrent(string $current) {
         if ($current != '') {
             foreach ($this->entries as $entry) {
-                if ($entry->getName() == $current) {
+                if (str_starts_with($current, $entry->getName())) {
                     $entry->setCurrent();
                 }
             }

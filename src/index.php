@@ -5,6 +5,7 @@ session_start();
 include 'core.php';
 include 'Autoloader.php';
 include '404.php';
+include 'debug.php';
 include 'favicon.php';
 include 'pageUtils/pageTemplateUtils.php';
 
@@ -14,27 +15,26 @@ use elements\LiteralElement;
 use routing\Router;
 use routing\Routes;
 
+$current = '';
 
-$current = getCurrentPage();
-
-if (!isset($_COOKIE['theme']) || !($_COOKIE['theme'] === 'default')) {
-    setcookie('theme', 'default');//, domain: '.kosmx.dev');
-
-}
 
 $R = new Router();
 
-$R->all('~^\\/core(\\.php)?$~')->action(function () {echo <<<END
-status-code: 303
-location: https://kosmx.dev
-END;
-});
 
 $R->get('~^\\/favicon\\.ico$~')->action(function () {
     return \favicon\serve();
 });
 
+$R->all('~^\\/u(ser)?(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return \user\AccountPage::getPage();});
+
+$R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
+$R->get('~^$~')->action(function () {return new LiteralElement((string)file_get_contents('index.html'));});
+
+
+
+// --- RESULT PROCESSING
 $result = $R->run(getCurrentPage());
+
 
 
 if ($result instanceof IElement) {
@@ -44,7 +44,7 @@ if ($result instanceof IElement) {
 
     $page->addElement($result);
 
-    $page->addElement(new LiteralElement("Hello page builder"));
+    //$page->addElement(new LiteralElement("Hello page builder"));
 
     echo $page->build();
 } else if ($result instanceof Routes) {
@@ -55,8 +55,10 @@ if ($result instanceof IElement) {
         case Routes::SELF_SERVED:
             break;
         default:
-
+            echo "unimplemented route: $result";
     }
 } else if ($result !== null) {
     echo $result;
+} else {
+    \notFound\print404();
 }

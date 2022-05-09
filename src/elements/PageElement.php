@@ -4,14 +4,10 @@ namespace elements;
 
 class PageElement implements IElement
 {
-    private array $elements = array();
+    use ListTrait;
 
     public string $title = "Emotes Open Collection";
     public ?string $overrideCss = null;
-
-    function addElement(IElement $element) {
-        $this->elements[] = $element;
-    }
 
     function build(): string
     {
@@ -20,7 +16,7 @@ class PageElement implements IElement
             $str .= $element->build();
         }
         if ($this->overrideCss === null) {
-            $css = '/assets/' . $_COOKIE['theme'] . '.css';
+            $css = '/assets/' . cookieOrDefault('theme', 'default', true) . '.css';
         } else {
             $css = $this->overrideCss;
         }

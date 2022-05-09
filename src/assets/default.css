@@ -15,7 +15,7 @@
     border-right: 1px solid #ccc;
 }
 li:last-child {
-     border-right: none;
+    border-right: none;
     float: right;
  }
 
@@ -38,4 +38,20 @@ li:last-child {
 
 body {
     margin-top: 70px;
+}
+
+.content {
+    text-align: center;
+}
+
+.loginTable {
+    margin-left: auto;
+    margin-right: auto;
+}
+.loginTable td {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+.loginTable td:last-child {
+    border-left-style: groove;
 }
