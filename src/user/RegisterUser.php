@@ -3,14 +3,11 @@
 namespace user;
 include 'auth/IAuthMethod.php';
 
+use elements\bootstrap\HOrdered;
 use elements\ErrorTag;
-use elements\form\Input;
 use elements\IElement;
 use elements\LiteralElement;
-use elements\SimpleForm;
 use elements\SimpleList;
-use elements\SimpleTable;
-use elements\TableRow;
 use JetBrains\PhpStorm\ArrayShape;
 use routing\Router;
 use routing\Routes;
@@ -24,8 +21,9 @@ class RegisterUser
     private int $step = 0;
     private GitHub $gitHubAuth;
 
-    #[ArrayShape(['id' => "int", 'name' => "string", 'displayname' => "string", 'email' => "string"])]
+    #[ArrayShape(['id' => "int", 'user' => "\pageUtils\UserHelper"])]
     private ?array $userData;
+    private ?IAuthMethod $authMethod = null;
 
     /*
     public function __serialize(): array
@@ -51,7 +49,7 @@ class RegisterUser
 
         return match ($this->step) {
             0 => $this->loginMainScreen(),
-            1 => $this->step1(),
+            1 => $this->register(),
             default => Routes::NOT_FOUND,
         };
     }
@@ -66,7 +64,8 @@ class RegisterUser
         return $R->run(getCurrentPage());
     }
 
-    private function oauthCallback() {
+    private function oauthCallback(): IElement
+    {
 
         $auth = getUrlArray()[2];
         $auth = match ($auth) {
@@ -76,7 +75,7 @@ class RegisterUser
         try {
             $ret = $auth->authCallback();
 
-        } catch (IllegalStateException $e) {
+        } catch (IllegalStateException) {
 
             //state mismatch, timeout or third-party
             http_response_code(498); //Note somehow the mismatched token
@@ -99,12 +98,13 @@ END
 
 
             if($res->num_rows == 1) {
-                //User exists, we are good
+                return AccountPage::getAccountPage();
             } else {
                 $this->userData = $userData;
                 $this->step = 1;
                 header('/u');
-                return $this->step1();
+                $this->authMethod = $auth;
+                return $this->register();
             }
 
         } else {
@@ -119,44 +119,58 @@ END
     private function welcomeNewPeople(SimpleList $listElement = new SimpleList()): IElement
     {
         #$listElement = new SimpleList();
-        $tableRow = new TableRow();
+        $hstack = new HOrdered();
         $listElement->addElement(new LiteralElement(<<<END
 <h1>You are not logged in, please log in!</h1>
 END
 ));
 
-        $tableRow->addElement(new LiteralElement(<<<END
-<h2>Please select one to log-in method!</h2>
-<h3>To register, first log-in with an account,<br>and follow the form.S</h3>
+        $hstack->addElement(new LiteralElement(<<<END
+<h4>Please select one method to log-in!</h4>
+To register, first log-in with an account,<br>and follow the form.
 END
 
 ));
 
-        $tableRow->addElement($this->gitHubAuth->getAuthButton());
+        $hstack->addElement($this->gitHubAuth->getAuthButton(), 5);
 
-        $table = new SimpleTable();
-        $table->addRow($tableRow);
-        $table->class = 'loginTable';
-        $listElement->addElement($table);
+
+        $listElement->addElement($hstack);
         $listElement->setClass('content');
         return $listElement;
     }
 
-    private function step1(): IElement
+    private function register(): IElement
+    {
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+            return $this->tryRegisterUser();
+        } else {
+            return $this->displayRegister();
+        }
+    }
+
+    private function displayRegister(): IElement
     {
         $content = new SimpleList();
 
         $content->addElement(new LiteralElement(<<<END
-<h1>You are not registered.</h1>
-<h2>Please verify/check the form below, and press <bold>register</bold> to finish your account</h2>
-<h2>Public field has <span style="color: darkred">red</span> frame</h2>
+<h1>Register</h1>
+<h4>Please verify/check the form below, and press <bold>register</bold> to finish your account</h4>
 END));
 
-        $registerForm = new SimpleForm("POST", "/u");
-        $registerForm->addElement(new Input(''));
+        $form = $this->userData['user']->getForm('/u/register', 'Register');
 
-
-
+        $content->addElement($form);
         return $content;
+    }
+
+    private function tryRegisterUser(): IElement {
+        if ($this->userData['user']->register($this->userData['id'], $this->authMethod->getName(), $this->authMethod->getToken())) {
+            header('/u');
+            $_SESSION['user'] = serialize($this->userData);
+            return AccountPage::getAccountPage();
+        } else {
+            return $this->displayRegister();
+        }
     }
 }

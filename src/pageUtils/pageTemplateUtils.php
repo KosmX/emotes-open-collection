@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 namespace utils;
 
-use elements\PageMenu;
-use elements\pageMenu\LiteralEntry;
+use elements\bootstrap\Navbar;
+use elements\bootstrap\navbar\LiteralEntry;
 
-function getDefaultHeader(string $current = ''): PageMenu {
-    $menu = new PageMenu();
+function getDefaultHeader(string $current = ''): Navbar {
+    $menu = new Navbar();
 
     $menu->addEntry(new LiteralEntry("Emotes", "emotes"));
     $menu->addEntry(new LiteralEntry("Account", "user"));

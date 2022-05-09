@@ -21,7 +21,7 @@ function print404(): void {
     <h1><snap class="title">Not &nbsp;&nbsp;Found!</snap></h1>
     </td></tr>
     <tr><td>
-    <h2>$currentPage &nbsp;&nbsp;forgot &nbsp;&nbsp;the &nbsp;&nbsp;first &nbsp;&nbsp;rule &nbsp;&nbsp;of &nbsp;&nbsp;Minecraft</h2>
+    <h2>/$currentPage &nbsp;&nbsp;forgot &nbsp;&nbsp;the &nbsp;&nbsp;first &nbsp;&nbsp;rule &nbsp;&nbsp;of &nbsp;&nbsp;Minecraft</h2>
     </td></tr>
     <tr><td>
     <h2>Error: &nbsp;&nbsp;<span class="yellow">404</span></h2>

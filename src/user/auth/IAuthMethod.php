@@ -19,17 +19,20 @@ interface IAuthMethod
      * If auth was success, we can have the corresponding user ID! Let's get it from GH
      * @return array the user data:
      * userid => unique user id, used to connect account
-     * username => the current name of the user
-     * displayname => the current display name of the user, always specify, even if the same as username
-     * email => the email address of the user, please specify
+     * user => user type
      */
-    #[ArrayShape(['id' => "int", 'name' => "string", 'displayname' => "string", 'email' => "string"])]
+    #[ArrayShape(['id' => "int", 'user' => 'pageUtils\UserHelper'])]
     function getVerifiedUserData(): array;
 
     /**
      * @return string The DB name of the method
      */
     function getName(): string;
+
+    /**
+     * @return string The user token
+     */
+    function getToken(): string;
 }
 
 

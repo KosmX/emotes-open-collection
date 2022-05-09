@@ -1,6 +1,7 @@
 <?php
 namespace user;
 
+use elements\IElement;
 use elements\LiteralElement;
 use routing\Router;
 use routing\Routes;
@@ -41,7 +42,7 @@ class AccountPage
     {
         //echo 'asd';
         if (isset($_SESSION['user'])) {
-            return new LiteralElement("User page TODO");
+            return self::getAccountPage();
         } else {
             return self::registerUser();
         }
@@ -60,6 +61,10 @@ class AccountPage
 
         return $ret;
         //return null;
+    }
+
+    public static function getAccountPage(): IElement {
+        return new LiteralElement("User page TODO");
     }
 
 }
