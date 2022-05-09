@@ -10,10 +10,11 @@ include 'favicon.php';
 include 'pageUtils/pageTemplateUtils.php';
 
 use elements\IElement;
-use elements\PageElement;
 use elements\LiteralElement;
+use elements\PageElement;
 use routing\Router;
 use routing\Routes;
+use user\AccountPage;
 
 $current = '';
 
@@ -25,10 +26,21 @@ $R->get('~^\\/favicon\\.ico$~')->action(function () {
     return \favicon\serve();
 });
 
-$R->all('~^\\/u(ser)?(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return \user\AccountPage::getPage();});
+$R->all('~^\\/register(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return \user\AccountPage::getPage();});
+$R->all('~^\\/u(ser)?\\/~')->action(function () use (&$current) {
+    $current = 'user';
+    return AccountPage::getAccountPage();
+});
+$R->all('~^\\/u(ser)?$~')->action(function () use (&$current) {
+    $current = 'user';
+    if (\pageUtils\UserHelper::getCurrentUser() != null) return AccountPage::getAccountPage();
+    else return AccountPage::getPage();
+});
+
+$R->get('~^\\/logout$~')->action(function () {return AccountPage::logout();});
 
 $R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
-$R->get('~^$~')->action(function () {return new LiteralElement((string)file_get_contents('index.html'));});
+$R->get('~^$~')->action(function () {return index_page::getIndex();});
 
 
 
@@ -39,10 +51,11 @@ $result = $R->run(getCurrentPage());
 
 if ($result instanceof IElement) {
     $page = new PageElement();
+    $page->enableBootstrap = true;
 
     $page->addElement(utils\getDefaultHeader($current));
 
-    $page->addElement($result);
+    $page->addElement(\elements\bootstrap\Container::getDefaultSpacer($result));
 
     //$page->addElement(new LiteralElement("Hello page builder"));
 

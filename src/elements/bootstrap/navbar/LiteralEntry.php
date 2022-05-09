@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace elements\pageMenu;
+namespace elements\bootstrap\navbar;
 
 
 class LiteralEntry implements IEntry {
-    private bool $isCurrent = false;
+    private string $mode = '';
     private string $literal;
     private string $target;
 
@@ -15,11 +15,13 @@ class LiteralEntry implements IEntry {
 
     function toStr(): string
     {
-        if ($this->isCurrent) {
-            return "<li class='navbarActive'><a href=\"\\$this->target\">$this->literal</a></li>";
-        } else {
-            return "<li><a href=\"\\$this->target\">$this->literal</a></li>";
-        }
+
+        return <<<END
+        <li class="nav-item">
+          <a class="nav-link$this->mode" href="\\$this->target">$this->literal</a>
+        </li>
+END;
+
     }
 
     function getName(): string
@@ -29,6 +31,11 @@ class LiteralEntry implements IEntry {
 
     function setCurrent(): void
     {
-        $this->isCurrent = true;
+        $this->mode .= ' active';
+    }
+
+    function disable(): void
+    {
+        $this->mode .= ' disabled';
     }
 }

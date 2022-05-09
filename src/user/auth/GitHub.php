@@ -7,16 +7,20 @@ use elements\IElement;
 use elements\LiteralElement;
 use elements\SubmitConstantButton;
 use JetBrains\PhpStorm\ArrayShape;
+use pageUtils\UserHelper;
 
 class GitHub implements IAuthMethod
 {
+    private string $callbackUrl;
+
     private string $state;
     private ?string $token = null;
     private ?string $tokenType = null;
 
     private static string $clientID = "154d6d89f8cf32b9275e"; //GH OAuth Client ID
-    public function __construct()
+    public function __construct(string $url)
     {
+        $this->callbackUrl = $url;
         $this->state = randomStr();
     }
 
@@ -32,7 +36,7 @@ END
         );
         $params = array();
         $params['client_id'] = self::$clientID;
-        $params['redirect_uri'] = "https://emotes.kosmx.dev/u/auth/gh";
+        $params['redirect_uri'] = "https://emotes.kosmx.dev$this->callbackUrl";
         $params['state'] = $this->state;
         $params['scope'] = "read:user, user:email";#, user:email";
         return new SubmitConstantButton($ghLogin, $params, "get", "https://github.com/login/oauth/authorize");
@@ -81,13 +85,14 @@ END
         return false;
     }
 
-    #[ArrayShape(['id' => "int", 'name' => "string", 'displayname' => "string", 'email' => "string"])]
+
+    #[ArrayShape(['id' => "int", 'user' => "\pageUtils\UserHelper"])]
     function getVerifiedUserData(): array
     {
         if ($this->token === null) throw new IllegalStateException("UserID without token");
         $url = 'https://api.github.com/user';
         $token = $this->token;
-        var_dump($token);
+        //var_dump($token);
         $tokenType = 'Bearer';
         $get = array(
             'http' => array(
@@ -97,20 +102,25 @@ END
             )
         );
         $result = file_get_contents($url, false, stream_context_create($get));
-        var_dump($result);
+        //var_dump($result);
         $result = json_decode($result, true);
-        var_dump($result);
+        //var_dump($result);
+
+        $user = new UserHelper($result['login'], $result['name'], $result['email']);
 
         return array(
             'id' => (int)$result['id'],
-            'name' => $result['login'],
-            'displayname' => $result['name'],
-            'email' => $result['email']
+            'user' => $user
         );
     }
 
     function getName(): string
     {
         return 'gh';
+    }
+
+    public function getToken(): string
+    {
+        return $this->token;
     }
 }

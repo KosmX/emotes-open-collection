@@ -1,7 +1,10 @@
 <?php
 namespace user;
 
+use elements\IElement;
 use elements\LiteralElement;
+use elements\SimpleList;
+use pageUtils\UserHelper;
 use routing\Router;
 use routing\Routes;
 
@@ -29,7 +32,8 @@ class AccountPage
         $R->all(Router::$EMPTY)->action(function () {return self::userOverview();});
         $R->all('~^auth\\/[^\\/]+$~')->action(function () {return self::userOverview();});
 
-        $R->all('~^register(\\/|$)~')->action(function () {return self::registerUser();});
+        //$R->all('~^register(\\/|$)~')->action(function () {return self::registerUser();});
+
 
         #$R->get('~^oauth\\/~')->action(function () {return self::registerUser();});
 
@@ -41,7 +45,7 @@ class AccountPage
     {
         //echo 'asd';
         if (isset($_SESSION['user'])) {
-            return new LiteralElement("User page TODO");
+            return self::getAccountPage();
         } else {
             return self::registerUser();
         }
@@ -60,6 +64,52 @@ class AccountPage
 
         return $ret;
         //return null;
+    }
+
+    /**
+     * @return IElement|Routes
+     */
+    public static function getAccountPage(?UserHelper $user = null): ?object {
+        if ($user == null) {
+            $R = new Router(1);
+            $R->all(Router::$EMPTY)->action(function () {
+                return UserHelper::getCurrentUser();
+            });
+            $R->all('~.*~')->action(function () {
+                return UserHelper::getUser(getUrlArray()[1]);
+
+            });
+            /** @var UserHelper $user */
+            $user = $R->run(getCurrentPage());
+            if ($user == null) {
+                return Routes::NOT_FOUND;
+            }
+        }
+
+        $elements = new SimpleList();
+
+        $emailField = '';
+        if ($user->publicEmail || UserHelper::getCurrentUser() !== null && $user->userID === UserHelper::getCurrentUser()->userID) {
+            $emailField = $user->email;
+        }
+
+        $elements->addElement(new LiteralElement(<<<END
+<h1>$user->displayName</h1>
+$emailField
+END
+));
+
+        return $elements;
+    }
+
+    public static function logout(): IElement|Routes
+    {
+        if (UserHelper::getCurrentUser() == null) {
+            return Routes::NOT_FOUND;
+        } else {
+            UserHelper::logout();
+            return new LiteralElement("<h2>Goodbye!</h2>");
+        }
     }
 
 }

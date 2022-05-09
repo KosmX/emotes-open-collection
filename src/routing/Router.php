@@ -61,7 +61,7 @@ class Route {
         $this->regex = $regex;
         $this->method = $method;
         $this->execute = function () {
-            throw new \http\Exception\InvalidArgumentException("WAT?");
+            throw new \InvalidArgumentException("WAT?");
         };
     }
 
