@@ -19,8 +19,6 @@ services:
             db_password: iDontWork
             db_db: emotes
             java: java
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
     db:
         image: mysql:latest
         environment:
