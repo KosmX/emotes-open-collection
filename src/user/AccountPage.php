@@ -4,7 +4,6 @@ namespace user;
 use elements\AlertTag;
 use elements\IElement;
 use elements\LiteralElement;
-use elements\PageElement;
 use elements\SimpleList;
 use pageUtils\UserHelper;
 use routing\Method;
@@ -117,7 +116,7 @@ END
 
     public static function userSettings(): IElement|Routes
     {
-        if (self::getAccountPage() == null) return Routes::NOT_FOUND;
+        if (UserHelper::getCurrentUser() == null) return Routes::NOT_FOUND;
 
         $user = clone(UserHelper::getCurrentUser());
 

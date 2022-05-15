@@ -1,13 +1,13 @@
 drop database if exists emotes;
 
-create database if not exists emotes;
+create database if not exists emotes CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 use emotes;
 
 create table if not exists users
 (
     id             int auto_increment primary key,
     email          nvarchar(128)        not null,
-    username       nvarchar(128) unique not null,
+    username       varchar(128) unique not null,
     displayName    nvarchar(128),
     isEmailPublic  bool default false,
     theCheckbox    bool default false

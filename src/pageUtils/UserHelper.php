@@ -30,7 +30,7 @@ class UserHelper
      */
     public function __construct(string $uname, ?string $displayName, ?string $email, bool $publicEmail = false, bool $theCheckbox = false, ?int $userID = null)
     {
-        $this->uname = strtolower($uname);
+        $this->uname = $uname;
         $this->displayName = $displayName ?? $uname;
         $this->email = $email ?? '';
         $this->publicEmail = $publicEmail;
@@ -55,7 +55,7 @@ class UserHelper
   <div class="mb-3">
     <label for="username" class="form-label">User name</label>
     <span class="input-group-text" id="inputGroupPrepend3">@</span>
-    <input name="username" type="text" class="form-control$unameValid" id="username" aria-describedby="usernameHelp" value="$this->uname" pattern="^[a-z0-9]+$" maxlength="128" minlength="3">
+    <input name="username" type="text" class="form-control$unameValid" id="username" aria-describedby="usernameHelp" value="$this->uname" pattern="^[a-zA-Z0-9]+$" maxlength="128" minlength="3">
     <div id="usernameHelp" class="form-text">It will be your user URL. For example: emotes.kosmx.dev/u/kosmx<br>It must be unique.</div>
     $unameFeedback
   </div>
@@ -154,30 +154,24 @@ FORM);
 
         $this->usernameInvalid = null;
         if (isset($_POST['username']) && isset($_POST['email'])) {
-            $this->uname = $_POST['username'];
-            $this->email = $_POST['email'];
+            $this->uname = htmlspecialchars($_POST['username']);
+            $this->email = htmlspecialchars($_POST['email']);
 
             if ($this->uname == '') {
                 $this->usernameInvalid = "Please specify a username!";
                 return false;
             }
 
-            $this->displayName = $_POST['displayname'] ?? $this->uname;
+            $this->displayName = htmlspecialchars($_POST['displayname'] ?? $this->uname);
             if ($this->displayName == '') {
                 $this->displayName = $this->uname;
             }
             $this->publicEmail = ($_POST['public-email'] ?? '') == '1';
             $this->theCheckbox = ($_POST['checkbox'] ?? '') == '1';
 
-            if (preg_match('~^[a-z\\d]+$~', $this->uname) == 0) {
+            if (preg_match('~^[a-zA-Z\\d]+$~', $this->uname) == 0) {
                 //$this->usernameInvalid = 'Username is verified on the server. good try!'; //The standard form does not allow invalid usernames, whoever finds it, they must have done the post manually.
-                $this->usernameInvalid = "Please choose a valid username, only contains small letters and numbers";
-                return false;
-            }
-
-            if (preg_match('~^[a-z\\d]+$~', $this->uname) == 0) {
-                //$this->usernameInvalid = 'Username is verified on the server. good try!'; //The standard form does not allow invalid usernames, whoever finds it, they must have done the post manually.
-                $this->usernameInvalid = "Please choose a valid username, only contains small letters and numbers";
+                $this->usernameInvalid = "Please choose a valid username, only contains letters and numbers";
                 return false;
             }
 
