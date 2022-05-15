@@ -9,6 +9,7 @@ function debugger(): Routes
     var_dump($_POST);
     var_dump($_SERVER['HTTP_HOST']);
     var_dump($_SESSION);
+    var_dump($_FILES);
 
 
     $a = new \java\EmoteDaemonClient();

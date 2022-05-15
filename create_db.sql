@@ -42,14 +42,16 @@ create table if not exists format
 create table if not exists emotes
 (
     id          int auto_increment primary key,
-    hashLow     bigint        not null,
-    hashHigh    bigint        not null,
-    emoteOwner  int           not null,
+    uuid        char(36) unique,
+    emoteOwner  int          not null,
     name        varchar(128) not null,
     description varchar(256) default '',
     author      varchar(128) null,
-    data        MEDIUMBLOB    not null,
-    unique (hashHigh, hashLow) #128 bit UUID
+    #Emote visibility
+    #0 => private 1 => unlisted, 2 => public list, 3 => Emote ZIP
+    visibility  int default 0,
+    published   bool default 0,
+    data        MEDIUMBLOB   not null
 );
 
 create table if not exists likes (

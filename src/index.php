@@ -46,7 +46,7 @@ $R->get('~^\\/logout$~')->action(function () {return AccountPage::logout();});
 $R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
 $R->get('~^$~')->action(function () {return index_page::getIndex();});
 
-$R->all('~^e(motes)?(\\/|$)~')->action(function () use (&$current) {$current = 'emotes'; return \emotes\index::index();});
+$R->all('~^\\/e(motes)?(\\/|$)~')->action(function () use (&$current) {$current = 'emotes'; return \emotes\index::index();});
 
 
 

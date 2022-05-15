@@ -64,7 +64,11 @@ class AccountPage
         }
         $ret = $registration->continue();
 
-        $_SESSION['registration'] = serialize($registration);
+        if (UserHelper::getCurrentUser() === null) {
+            $_SESSION['registration'] = serialize($registration);
+        } else {
+            unset($_SESSION['registration']);
+        }
 
         return $ret;
         //return null;
@@ -138,7 +142,7 @@ END
 
         $elements->addElement(new Button('/settings/delete', new LiteralElement("Delete user"), 'danger'));
 
-        $_SESSION['profEdit'] = serialize($user);
+        #$_SESSION['profEdit'] = serialize($user);
 
         return $elements;
     }

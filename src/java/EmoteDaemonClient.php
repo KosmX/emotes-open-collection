@@ -18,7 +18,6 @@ class EmoteDaemonClient
         $this->sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
         $address = gethostbyname('java');
-        echo $address;
 
         socket_connect($this->sock,$address, 3000);
 
@@ -28,7 +27,11 @@ class EmoteDaemonClient
         $this->dataToSend[] = array('data' => $data, 'type' => $type);
     }
 
-    public function exchange(array $requestData): array
+    /**
+     * @param array $requestData
+     * @return array|null null if failed to get result
+     */
+    public function exchange(array $requestData): ?array
     {
         $data = pack('c', sizeof($this->dataToSend));
         foreach ($this->dataToSend as $item) {
@@ -43,11 +46,11 @@ class EmoteDaemonClient
         $this->writeSocket($data);
 
         $payload = $this->readSocket();
+        if ($payload === null) return null;
 
         $len = unpack('c', $payload)[1];
         $pos = 1;
         $result = array();
-        var_dump($payload);
         for ($i = 0; $i < $len; $i++) {
             $type = unpack('c', $payload, $pos++)[1];
             $size = unpack('N', $payload, $pos)[1];
@@ -71,10 +74,11 @@ class EmoteDaemonClient
     /**
      * @link https://stackoverflow.com/questions/27631009/php-get-packet-length
      * but modified for my binary purposes
-     * @return string data
+     * @return string|null data
      */
-    private function readSocket(): string {
+    private function readSocket(): ?string {
         socket_recv($this->sock, $r, 4, flags: MSG_WAITALL);
+        if ($r === null) return null;
         $la = unpack("N", $r)[1];
 
         $len = $la;
