@@ -91,6 +91,7 @@ END
     {
         if ($this->token === null) throw new IllegalStateException("UserID without token");
         $url = 'https://api.github.com/user';
+        $urlEmail = 'https://api.github.com/user/emails';
         $token = $this->token;
         //var_dump($token);
         $tokenType = 'Bearer';
@@ -107,6 +108,12 @@ END
         //var_dump($result);
 
         $user = new UserHelper($result['login'], $result['name'], $result['email']);
+
+
+        $result2 = file_get_contents($urlEmail, false, stream_context_create($get));
+        $result2 = json_decode($result2, true);
+
+        $user->email = $result2[0]['email'];
 
         return array(
             'id' => (int)$result['id'],

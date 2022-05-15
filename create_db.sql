@@ -6,9 +6,9 @@ use emotes;
 create table if not exists users
 (
     id             int auto_increment primary key,
-    email          nvarchar(128)        not null,
+    email          varchar(128)        not null,
     username       varchar(128) unique not null,
-    displayName    nvarchar(128),
+    displayName    varchar(128) collate utf8mb4_0900_ai_ci,
     isEmailPublic  bool default false,
     theCheckbox    bool default false
 );
@@ -45,9 +45,9 @@ create table if not exists emotes
     hashLow     bigint        not null,
     hashHigh    bigint        not null,
     emoteOwner  int           not null,
-    name        nvarchar(128) not null,
-    description nvarchar(256) default '',
-    author      nvarchar(128) null,
+    name        varchar(128) not null,
+    description varchar(256) default '',
+    author      varchar(128) null,
     data        MEDIUMBLOB    not null,
     unique (hashHigh, hashLow) #128 bit UUID
 );

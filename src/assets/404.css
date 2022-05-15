@@ -67,7 +67,7 @@ h2 {
     background: url("mc_buttons.png") no-repeat left top;
     background-size: cover;
     image-rendering: pixelated;
-    margin: 10px;
+    margin: 10px auto;
 }
 
 a:link, a:visited, a:hover {
