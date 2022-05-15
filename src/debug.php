@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-use pageUtils\UserHelper;
+use routing\Routes;
 
-function debugger(): \routing\Routes
+function debugger(): Routes
 {
     var_dump($_REQUEST);
     var_dump($_GET);
@@ -10,43 +10,28 @@ function debugger(): \routing\Routes
     var_dump($_SERVER['HTTP_HOST']);
     var_dump($_SESSION);
 
-    var_dump(($_POST['public-email'] ?? '') == '1');
 
-    $a = array();
-    $a['a'] = "b";
-    $a['4'] = '2';
+    $a = new \java\EmoteDaemonClient();
+    var_dump(unpack('c', '*1234'));
 
-    $form = new \elements\SubmitConstantButton(new \elements\LiteralElement("asdf"), $a, "get", "debug.php");
-    echo $form->build();
+    #$a->addData(file_get_contents('emotecraft_export/Waving.emotecraft'), 1);
+    $a->addData(file_get_contents('json_export/bee5.json'), 2);
 
+    $a->addData(file_get_contents('json_export/bee5.png'), 3);
+    $json = array(
+        'name' => 'TestModified stuff',
+        'description' => 'Not Bee (it is actually)',
+        'author' => 'Not KosmX',
+        'uuid' => '0dc7cfe3-abfb-47b9-a0e5-6b51d8e45fdf'
+    );
 
-    $str = 'route/to/the/pages';
-
-    $idx = implode('/', array_slice(explode('/', $str), 4 ));
-
-    var_dump($idx);
-
-    $user = new UserHelper('kosmx', 'KosmX', 'kosmx.mc@gmail.com');
-    echo $user->getForm('debug.php')->build();
-
-    /*
-    $q = getDB()->prepare("INSERT INTO users (email, username, displayName, theCheckbox) value ('kosmx.mc@gmail.com', 'asdf', 'KosmX', true);");
-    $q->execute();
-    var_dump($q->get_result());
-    */
-
-    $str = 'validusername';
-    $str2 = 'Invalid|}{UsernME';
+    $a->addData(json_encode($json), 8);
 
 
-    var_dump(preg_match('~^[a-z\\d]+$~', $str));
-    //var_dump($m);
-    var_dump(preg_match('~^[a-z\\d]+$~', $str2 , $m, PREG_UNMATCHED_AS_NULL));
-    var_dump($m);
+    $result = $a->exchange(array(8, 1));
+    #file_put_contents('test.emotecraft', $result[1]['data']);
 
-    return \routing\Routes::SELF_SERVED;
-}
+    var_dump($result);
 
-function trimUrl(int $depth) {
-
+    return Routes::SELF_SERVED;
 }

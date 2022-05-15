@@ -18,6 +18,9 @@ services:
             db_user: iUser
             db_password: iDontWork
             db_db: emotes
+            java: java
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
     db:
         image: mysql:latest
         environment:
@@ -27,3 +30,5 @@ services:
             TZ: UTC
         ports:
             - "8006:3306"
+    java:
+        build: ./docker_images/java
