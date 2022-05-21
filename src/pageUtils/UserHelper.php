@@ -149,6 +149,31 @@ FORM);
         } else return false;
     }
 
+
+    public function deleteUser(): void
+    {
+        getDB()->begin_transaction();
+        $removeLikes = getDB()->prepare("DELETE FROM likes where userID = ?;");
+        $removeLikes->bind_param('i', $this->userID);
+        $removeLikes->execute();
+
+        $removeEmotes = getDB()->prepare("DELETE FROM emotes where emoteOwner = ?;");
+        $removeEmotes->bind_param('i', $this->userID);
+        $removeEmotes->execute();
+
+        $removeAuths = getDB()->prepare("DELETE FROM userAccounts where userID = ?;");
+        $removeAuths->bind_param('i', $this->userID);
+        $removeAuths->execute();
+
+        $removeUser = getDB()->prepare("DELETE FROM users where id = ?;");
+        $removeUser->bind_param('i', $this->userID);
+        $removeUser->execute();
+        getDB()->commit();
+
+        self::logout();
+    }
+
+
     private function getParamsFromPost(): bool
     {
 
@@ -223,7 +248,7 @@ END;
     public static function getTheme(): string {
         $user = self::getCurrentUser();
         if ($user == null) {
-            return '/bootstrap/css/bootstrap.css';
+            return 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css';
         } else {
             return '/bootstrap/css/bootstrap.css';
             //TODO user-specific information
@@ -251,6 +276,7 @@ END;
     public static function logout():void {
         self::$INSTANCE = null;
         unset($_SESSION['user']);
+        session_destroy();
     }
 
 }

@@ -2,9 +2,11 @@
 namespace user;
 
 use elements\AlertTag;
+use elements\bootstrap\Button;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
+use elements\SubmitConstantButton;
 use pageUtils\UserHelper;
 use routing\Method;
 use routing\Router;
@@ -62,7 +64,11 @@ class AccountPage
         }
         $ret = $registration->continue();
 
-        $_SESSION['registration'] = serialize($registration);
+        if (UserHelper::getCurrentUser() === null) {
+            $_SESSION['registration'] = serialize($registration);
+        } else {
+            unset($_SESSION['registration']);
+        }
 
         return $ret;
         //return null;
@@ -132,7 +138,38 @@ END
         $elements->addElement(new LiteralElement("<h1>Edit profile</h1>"));
         $elements->addElement($user->getForm('/settings/profile'));
 
-        $_SESSION['profEdit'] = serialize($user);
+        $elements->addElement(new LiteralElement("<hr>"));
+
+        $elements->addElement(new Button('/settings/delete', new LiteralElement("Delete user"), 'danger'));
+
+        #$_SESSION['profEdit'] = serialize($user);
+
+        return $elements;
+    }
+
+    public static function deleteUser(): IElement|Routes
+    {
+        if (UserHelper::getCurrentUser() == null) return Routes::NOT_FOUND;
+        $elements = new SimpleList();
+
+        if (Method::POST->isActive() && isset($_POST['checkbox'])) {
+            UserHelper::getCurrentUser()->deleteUser();
+            redirect('/');
+            return \index_page::getIndex();
+
+        }
+
+        $elements->addElement(new LiteralElement(<<<END
+
+<form method="post" action="/settings/delete">
+  <div class="mb-3 form-check">
+    <input name="checkbox" type="checkbox" class="form-check-input" id="exampleCheck1" aria-describedby="exampleCheckHelp" required>
+    <label class="form-check-label" for="exampleCheck1">I want to delete my account</label>
+    <div id="exampleCheckHelp" class="form-text">By deleting your account, every information will be permanently removed.</div>
+  </div>
+  <button type="submit" class="btn btn-primary">Delete my account</button>
+</form>
+END));
 
         return $elements;
     }

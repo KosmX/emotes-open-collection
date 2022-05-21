@@ -10,11 +10,11 @@ include 'favicon.php';
 include 'pageUtils/pageTemplateUtils.php';
 
 use elements\IElement;
-use elements\LiteralElement;
 use elements\PageElement;
 use routing\Router;
 use routing\Routes;
 use user\AccountPage;
+use function notFound\print404;
 
 $current = '';
 
@@ -26,7 +26,7 @@ $R->get('~^\\/favicon\\.ico$~')->action(function () {
     return \favicon\serve();
 });
 
-$R->all('~^\\/register(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return \user\AccountPage::getPage();});
+$R->all('~^\\/register(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return AccountPage::getPage();});
 $R->all('~^\\/u(ser)?\\/~')->action(function () use (&$current) {
     $current = 'user';
     return AccountPage::getAccountPage();
@@ -37,12 +37,16 @@ $R->all('~^\\/u(ser)?$~')->action(function () use (&$current) {
     else return AccountPage::getPage();
 });
 
-$R->all('~^\\/settings\\/(editP|p)rofile(\\/|$)~')->action(function () use ($current) {$current = 'user'; return AccountPage::userSettings();});
+$R->all('~^\\/settings\\/(editP|p)rofile(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return AccountPage::userSettings();});
+$R->all('~^\\/settings\\/(editP|p)rofile(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return AccountPage::userSettings();});
+$R->all('~^\\/settings\\/delete$~')->action(function () use (&$current) {$current = 'user'; return AccountPage::deleteUser();});
 
 $R->get('~^\\/logout$~')->action(function () {return AccountPage::logout();});
 
 $R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
 $R->get('~^$~')->action(function () {return index_page::getIndex();});
+
+$R->all('~^\\/e(motes)?(\\/|$)~')->action(function () use (&$current) {$current = 'emotes'; return \emotes\index::index();});
 
 
 
@@ -65,7 +69,7 @@ if ($result instanceof IElement) {
 } else if ($result instanceof Routes) {
     switch ($result) {
         case Routes::NOT_FOUND:
-            \notFound\print404();
+            print404();
             break;
         case Routes::SELF_SERVED:
             break;
@@ -75,5 +79,5 @@ if ($result instanceof IElement) {
 } else if ($result !== null) {
     echo $result;
 } else {
-    \notFound\print404();
+    print404();
 }

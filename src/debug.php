@@ -1,52 +1,42 @@
 <?php declare(strict_types=1);
 
-use pageUtils\UserHelper;
+use emotes\Emote;
+use routing\Routes;
 
-function debugger(): \routing\Routes
+function debugger(): Routes
 {
     var_dump($_REQUEST);
     var_dump($_GET);
     var_dump($_POST);
     var_dump($_SERVER['HTTP_HOST']);
     var_dump($_SESSION);
+    var_dump($_FILES);
 
-    var_dump(($_POST['public-email'] ?? '') == '1');
 
-    $a = array();
-    $a['a'] = "b";
-    $a['4'] = '2';
+    /** @var Emote $emote */
+    $emote = Emote::get(1);
 
-    $form = new \elements\SubmitConstantButton(new \elements\LiteralElement("asdf"), $a, "get", "debug.php");
+    $form = $emote->getEdit("/debug");
     echo $form->build();
 
-
-    $str = 'route/to/the/pages';
-
-    $idx = implode('/', array_slice(explode('/', $str), 4 ));
-
-    var_dump($idx);
-
-    $user = new UserHelper('kosmx', 'KosmX', 'kosmx.mc@gmail.com');
-    echo $user->getForm('debug.php')->build();
-
     /*
-    $q = getDB()->prepare("INSERT INTO users (email, username, displayName, theCheckbox) value ('kosmx.mc@gmail.com', 'asdf', 'KosmX', true);");
-    $q->execute();
-    var_dump($q->get_result());
+    $a = new \java\EmoteDaemonClient();
+    var_dump(unpack('c', '*1234'));
+    #$a->addData(file_get_contents('emotecraft_export/Waving.emotecraft'), 1);
+    $a->addData(file_get_contents('json_export/bee5.json'), 2);
+    $a->addData(file_get_contents('json_export/bee5.png'), 3);
+    $json = array(
+        'name' => 'TestModified stuff',
+        'description' => 'Not Bee (it is actually)',
+        'author' => 'Not KosmX',
+        'uuid' => '0dc7cfe3-abfb-47b9-a0e5-6b51d8e45fdf'
+    );
+    $a->addData(json_encode($json), 8);
+    $result = $a->exchange(array(8, 1));
+    #file_put_contents('test.emotecraft', $result[1]['data']);
+    var_dump($result);
     */
 
-    $str = 'validusername';
-    $str2 = 'Invalid|}{UsernME';
 
-
-    var_dump(preg_match('~^[a-z\\d]+$~', $str));
-    //var_dump($m);
-    var_dump(preg_match('~^[a-z\\d]+$~', $str2 , $m, PREG_UNMATCHED_AS_NULL));
-    var_dump($m);
-
-    return \routing\Routes::SELF_SERVED;
-}
-
-function trimUrl(int $depth) {
-
+    return Routes::SELF_SERVED;
 }
