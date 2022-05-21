@@ -55,11 +55,11 @@ create table if not exists emotes
 );
 
 create table if not exists likes (
-    id int auto_increment primary key,
     userID int,
     emoteID int,
     constraint likeMustBelongToUser foreign key (userID) references users (id),
-    constraint likeMustLikeSomething foreign key (emoteID) references emotes(id)
+    constraint likeMustLikeSomething foreign key (emoteID) references emotes(id),
+    PRIMARY KEY (userID, emoteID)
 );
 
 INSERT INTO auths (name) value ('gh');

@@ -13,6 +13,7 @@ function getDefaultHeader(string $current = ''): Navbar {
         $emotesEntry = new DropdownEntry('Emotes', 'emotes');
 
         $emotesEntry->addEntry('/e', 'Emotes');
+        $emotesEntry->addEntry('/e/starred', '<i class="bi bi-star-fill"></i> Starred emotes');
         $emotesEntry->addSeparator();
         $emotesEntry->addEntry('/e/new', '<i class="bi bi-upload"></i> Upload emote');
         $emotesEntry->addEntry('/e/my', 'My emotes');

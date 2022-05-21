@@ -22,13 +22,14 @@ class index
 
         $R->all('~^new$~')->action(function () {return self::uploadEmote();});
         $R->get('~^\\d+\\/icon$~')->action(function () {return self::getIcon();});
-        $R->get('~^\\d+(\\/)?$~')->action(function () {return self::displaySingleEmote();});
+        $R->all('~^\\d+(\\/)?$~')->action(function () {return self::displaySingleEmote();});
         $R->all('~^\\d+\\/edit(\\/)?$~')->action(function () {return self::edit();});
         $R->all('~^\\d+\\/delete(\\/)?$~')->action(function () {return self::delete();});
         $R->all('~^\\d+\\/bin(\\/)?$~')->action(function () {return self::bin();});
         $R->all('~^\\d+\\/json(\\/)?$~')->action(function () {return self::json();});
         $R->all('~^my(\\/)?$~')->action(function () {return self::userEmotes();});
         $R->all('~^tmp(\\/)?$~')->action(function () {return self::unpublishedEmotes();});
+        $R->all('~^starred(\\/)?$~')->action(function () {return self::starredEmotes();});
 
 
         return $R->run(getCurrentPage());
@@ -281,7 +282,7 @@ END;
         //The emote exists && (is not private || I'm the owner)
         if ($emote != null && ($emote->visibility >= 1 || UserHelper::getCurrentUser() != null && $emote->ownerID == UserHelper::getCurrentUser()->userID)) {
 
-            $q = getDB()->prepare("SELECT COUNT(l.id) as likes FROM emotes join likes l on emotes.id = l.emoteID where emoteID = ?;");
+            $q = getDB()->prepare("SELECT COUNT(l.userID) as likes FROM emotes join likes l on emotes.id = l.emoteID where emoteID = ?;");
             $q->bind_param('i', $emote->id);
             $q->execute();
             $likes = $q->get_result()->fetch_array()['likes'];
@@ -291,13 +292,50 @@ END;
             $q->execute();
             $r = $q->get_result()->fetch_array();
 
+
             $editButton = '';
             if (UserHelper::getCurrentUser() != null && UserHelper::getCurrentUser()->userID == $emote->ownerID) {
-                $editButton = <<<END
+                $editButton .= <<<END
 <a href="$emote->id/edit" type="button" class="btn btn-primary" style="margin-top: 24px"><i class="bi bi-pencil-square"></i> Edit</a>
 <a href="$emote->id/delete" type="button" class="btn btn-danger" style="margin-top: 24px"><i class="bi bi-trash"></i> Delete</a>
 END;
             }
+            if (UserHelper::getCurrentUser() != null) {
+                $userID = UserHelper::getCurrentUser()->userID;
+                $q = getDB()->prepare("SELECT COUNT(userID) as 'liked' FROM likes as l join users u on u.id = l.userID where userID = ? && l.emoteID = ?;");
+                $q->bind_param('ii', $userID, $emote->id);
+                $q->execute();
+                $liked = $q->get_result()->fetch_array()['liked'] != 0;
+
+                if (isset($_POST['like'])) {
+                    getDB()->begin_transaction();
+                    if ($liked) {
+                        $q = getDB()->prepare("DELETE FROM likes where likes.userID = ? && likes.emoteID = ?;");
+                        $q->bind_param('ii', $userID, $emote->id);
+                        $q->execute();
+                        $liked = false;
+                        $likes--;
+                    } else {
+                        $q = getDB()->prepare("INSERT INTO likes (userID, emoteID) VALUES (?, ?);");
+                        $q->bind_param('ii', $userID, $emote->id);
+                        $q->execute();
+                        $liked = true;
+                        $likes++;
+                    }
+                    getDB()->commit();
+                }
+
+                if ($liked) {
+                    $button = "<button type='submit' class='btn btn-warning'>$likes <i class='bi bi-star-fill'></i> Starred</button>";
+                } else {
+                    $button = "<button type='submit' class='btn btn-info'>$likes <i class='bi bi-star'></i> Star</button>";
+                }
+
+                $editButton .= <<<END
+<form method="post" target="$emote->id"><input type="hidden" name="like" value="1" />$button</form>
+END;
+            }
+
 
             $formatter = new EmoteDaemonClient();
             $q = getDB()->prepare('SELECT data FROM emotes where id = ?');
@@ -308,6 +346,7 @@ END;
             $hasIcon = '';
             $formatter->addData($ri->fetch_array()['data'], 1);
             $ri = $formatter->exchange(array(3));
+
 
             $author = htmlspecialchars($emote->author);
             $description = htmlspecialchars($emote->description);
@@ -465,5 +504,39 @@ END;
     private static function unpublishedEmotes()
     {
         return self::userEmotes('published = false');
+    }
+
+    private static function starredEmotes(string $filter = 'visibility >= 2 && published = true', int $pageSize = 20): Routes|IElement
+    {
+        if (UserHelper::getCurrentUser() == null) return Routes::NOT_FOUND;
+
+
+        $p = (int)($_GET['page']?? 0);
+        $p *= $pageSize;
+
+        $userID = UserHelper::getCurrentUser()->userID;
+        //this is not very manageable
+            if (isset($_GET['s'])){
+                $s = "%{$_GET['s']}%";
+                $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes join likes l on emotes.id = l.emoteID where ($filter) && (name like ? or description like ?) && l.userID = ? limit ? OFFSET ?;");
+                $qr = getDB()->prepare("SELECT COUNT(id) as count  FROM emotes join likes l on emotes.id = l.emoteID where ($filter) && (name like ? or description like ?) && l.userID = ?;");
+                $q->bind_param('ssiii', $s, $s,$userID, $pageSize, $p);
+                $qr->bind_param('ssi', $s, $s, $userID);
+            } else {
+                $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes join likes l on emotes.id = l.emoteID where ($filter) && l.userID = ? limit ? OFFSET ?;");
+                $qr = getDB()->prepare("SELECT COUNT(id) as count FROM emotes join likes l on emotes.id = l.emoteID where ($filter) && l.userID = ?;");
+                $q->bind_param('iii', $userID, $pageSize, $p);
+                $qr->bind_param('i', $userID);
+            }
+
+        $q->execute();
+        $result = $q->get_result();
+        $qr->execute();
+        $count = $qr->get_result()->fetch_array()['count'];
+        //var_dump($count);
+        $list = self::createEmoteListElement($result);
+
+        $list->addElement(self::getPageButtons($count, $p/$pageSize, $pageSize));
+        return $list;
     }
 }
