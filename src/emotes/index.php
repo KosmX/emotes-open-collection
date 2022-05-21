@@ -26,13 +26,88 @@ class index
         return $R->run(getCurrentPage());
     }
 
-    public static function emoteList(): ?IElement {
+    public static function getUserEmoteList(): ?IElement {
         $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where visibility >= 2 limit 100"); //or emoteOwner = ? and published = true
         $q->execute();
-
         $result = $q->get_result();
+        return self::createEmoteListElement($result->fetch_all());
+    }
+
+    /**
+     * Get emote list with FILTER
+     * Uses the $_GET['page'] if available.
+     * @param string $filter mysql filter, <b>not protected against sql injection</b><br>
+     * emote fields: [id, uuid, emoteOwner, name, description, author, visibility, published]
+     * @return IElement Emote list element
+     */
+    public static function emoteList(string $filter = 'visibility >= 2', int $pageSize = 20): IElement {
+        $p = (int)($_GET['page']?? 0);
+        $p *= $pageSize;
+
+        //this is not very manageable
+        if (isset($_GET['from'])) {
+            $owner = (int)$_GET['from'];
+            if (isset($_GET['s'])) {
+                $s = "%{$_GET['s']}%";
+                $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where ($filter) && (name like ? or description like ?) && emoteOwner = ? limit ? OFFSET ?;");
+                $qr = getDB()->prepare("SELECT COUNT(id) as count FROM emotes where ($filter) && (name like ? or description like ?) && emoteOwner = ?;");
+                $q->bind_param('ssiii', $s, $s, $owner, $pageSize, $p);
+                $qr->bind_param('ssi', $s, $s, $owner);
+
+            } else {
+                $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where ($filter) && emoteOwner = ? limit ? OFFSET ?;");
+                $qr = getDB()->prepare("SELECT COUNT(id) as count  FROM emotes where ($filter) && emoteOwner = ?;");
+                $q->bind_param('iii', $owner, $pageSize, $p);
+                $qr->bind_param('i', $owner);
+            }
+        } else {
+            if (isset($_GET['s'])){
+                $s = "%{$_GET['s']}%";
+                $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where ($filter) && (name like ? or description like ?) limit ? OFFSET ?;");
+                $qr = getDB()->prepare("SELECT COUNT(id) as count  FROM emotes where ($filter) && (name like ? or description like ?);");
+                $q->bind_param('ssii', $s, $s, $pageSize, $p);
+                $qr->bind_param('ss', $s, $s);
+            } else {
+                $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where $filter limit ? OFFSET ?;");
+                $qr = getDB()->prepare("SELECT COUNT(id) as count FROM emotes where $filter;");
+                $q->bind_param('ii', $pageSize, $p);
+            }
+        }
+        $q->execute();
+        $result = $q->get_result();
+        $qr->execute();
+        $count = $qr->get_result()->fetch_array()['count'];
+        //var_dump($count);
+        return self::createEmoteListElement($result);
+    }
+
+    /**
+     * Get emote list with FILTER
+     * Uses the $_GET['page'] if available.
+     * @param string $filter mysql filter, <b>not protected against sql injection</b><br>
+     * emote fields: [id, uuid, emoteOwner, name, description, author, visibility, published]
+     * @return IElement Emote list element
+     */
+    public static function searchedEmoteList(string $search, string $filter = 'visibility >= 2', int $pageSize = 20): IElement {
+        $p = (int)($_GET['page']?? 0);
+        $p *= $pageSize;
+        $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where ($filter) && (name like ? or description like ?) limit ? OFFSET ?"); //or emoteOwner = ? and published = true
+        $q->bind_param('ii', $pageSize, $p);
+        $q->execute();
+        $result = $q->get_result();
+        return self::createEmoteListElement($result);
+    }
+
+
+    public static function getPageButtons(int $length): IElement
+    {
+        return new LiteralElement('');
+    }
+
+    private static function createEmoteListElement(\mysqli_result $list): IElement
+    {
         $emotes = array();
-        foreach ($result as $item) {
+        foreach ($list as $item) {
             $emote = new Emote($item);
             $emotes[] = $emote;
         }
@@ -66,7 +141,7 @@ class index
         $element->addElement(new LiteralElement(<<<END
 <form method="post" target="/e/new" enctype="multipart/form-data"> <!--File upload needs different form-->
     <div class="mb-3">
-        <label for="fileUpload" class="form-label">Upload an emote</label>
+        <label for="file" class="form-label">Upload an emote</label>
         <input type="file" name="emote" class="form-control" id="emote" aria-labelledby="fileUploadHelp" required>
         <div id="fileUploadHelp" class="form-text">After uploading you can review the emote before publishing.</div>
     </div>

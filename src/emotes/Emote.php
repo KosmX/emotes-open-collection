@@ -38,6 +38,21 @@ class Emote
         $this->published = $data['published'] != 0;
     }
 
+    #[ArrayShape(['id' => "int", 'uuid' => 'string', 'ownerID' => 'int', 'name' => 'string', 'description' => 'string', 'author' => 'string', 'visibility' => 'int', 'published' => 'int'])]
+    private function getDataArray(): array
+    {
+        return array(
+            'id' => $this->id,
+            'uuid' => $this->uuid,
+            'ownerID' => $this->ownerID,
+            'name' => $this->name,
+            'description' => $this->description,
+            'author' => $this->author,
+            'visibility' => $this->visibility,
+            'published' => $this->published ? 1 : 0
+        );
+    }
+
 
     /**
      * Get an emote from ID
@@ -95,6 +110,107 @@ class Emote
 END);
 
     }
+
+    /**
+     * Edit emote content, will always result in a POST request
+     * @param string $callback callback URL
+     * @return IElement HTML content
+     */
+    public function getEdit(string $callback, string $buttonTitle = "Save"): IElement
+    {
+
+        return new LiteralElement(<<<END
+<form method="post" id="editform" action="$callback" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label for="icon" class="form-label">Emote icon:</label>
+    <input type="file" class="form-control" name="icon" id="icon" aria-describedby="iconHelp">
+  </div>
+  <div class="mb-3">
+    <label for="name" class="form-label">Emote name:</label>
+    <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelp" value="$this->name">
+  </div>
+  <div class="mb-3">
+    <label for="description" class="form-label">Description:</label>
+    <input type="text" class="form-control" name="description" id="description" value="$this->description">
+  </div>
+  <div class="mb-3">
+    <label for="author" class="form-label">Author:</label>
+    <input type="text" class="form-control" name="author" id="author" value="$this->author">
+  </div>
+  <div class="mb-3">
+    <label for="visibility" class="form-label">Emote visibility</label>
+    <select name="visibility" class="form-select" form="editform" aria-label="Select visibility">
+    <option value="0">Private</option>
+    <option value="1">Unlisted</option>
+    <option value="2" selected="selected">Public</option>
+    <option value="3">Public & include in public ZIP</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">$buttonTitle</button>
+</form>
+END);
+    }
+
+    /**
+     * It does <b>not</b> verify if the user can modify this emote.
+     * @return bool|string true if success, string if there is an error message, false if unknown failure
+     * It may change itself to not lose data.
+     */
+    public function processEdit(): bool|string
+    {
+        $this->name = $_POST['name']?? $this->name;
+        $this->description = $_POST['description']?? $this->description;
+        $this->author = $_POST['author']?? $this->author;
+
+        /** @var string|null $icon */
+        $icon = null;
+        if (isset($_FILES['icon'])) {
+            $imageData = $_FILES['icon'];
+            $type = exif_imagetype($imageData['tmp_name']);
+            if ($type === false || $type !== IMAGETYPE_PNG) {
+                return "Icon must be PNG";
+            }
+            $res = getimagesize($imageData['tmp_name']);
+            if ($res === false) return "Invalid image";
+            if ($res[0] !== $res[1]) return "Image must be a square (same with and height)";
+
+            $icon = file_get_contents($imageData['tmp_name']);
+            if ($icon === false) return false;
+        }
+
+        getDB()->begin_transaction();
+
+        $getOldData = getDB()->prepare('SELECT data FROM emotes where id = ? limit 1 FOR UPDATE');
+        $getOldData->bind_param('i', $this->id);
+        $getOldData->execute();
+        $r = $getOldData->get_result();
+        $r = $r->fetch_array()[0]['data'];
+
+        $emoteService = new EmoteDaemonClient();
+        $emoteService->addData($r, 1);
+        $emoteService->addData(json_encode($this->getDataArray()), 8);
+        if ($icon != null) {
+            $emoteService->addData($icon,3);
+        }
+        $r = $emoteService->exchange(array(1));
+        if ($r == null) {
+            getDB()->rollback();
+            return false;
+        }
+
+        $r = $r[0]['data'];
+
+        $query = getDB()->prepare('UPDATE emotes SET name = ?, description = ?, author = ?, published = true, visibility = ?, data = ? WHERE id = ?');
+        $NULL = '';
+        $query->bind_param('sssibi', $this->name, $this->description, $this->author, $this->visibility, $NULL, $this->id);
+        $query->send_long_data(4, $r);
+        $query->execute();
+
+        getDB()->commit();
+
+        return true;
+    }
+
 
     /**
      * Register a newly uploaded emote into the db

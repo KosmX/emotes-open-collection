@@ -2,8 +2,6 @@
 
 namespace java;
 
-use JetBrains\PhpStorm\ArrayShape;
-
 /**
  * Class to communicate with the Emote formatter daemon (a Java service using socket TCP)
  */
