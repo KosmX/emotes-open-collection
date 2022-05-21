@@ -19,6 +19,8 @@ function debugger(): Routes
     $form = $emote->getEdit("/debug");
     echo $form->build();
 
+    var_dump(ceil(6/2));
+
     /*
     $a = new \java\EmoteDaemonClient();
     var_dump(unpack('c', '*1234'));
