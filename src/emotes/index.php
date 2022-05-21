@@ -25,6 +25,8 @@ class index
         $R->get('~^\\d+(\\/)?$~')->action(function () {return self::displaySingleEmote();});
         $R->all('~^\\d+\\/edit(\\/)?$~')->action(function () {return self::edit();});
         $R->all('~^\\d+\\/delete(\\/)?$~')->action(function () {return self::delete();});
+        $R->all('~^\\d+\\/bin(\\/)?$~')->action(function () {return self::bin();});
+        $R->all('~^\\d+\\/json(\\/)?$~')->action(function () {return self::json();});
 
         return $R->run(getCurrentPage());
     }
@@ -368,6 +370,40 @@ END
 ));
                 return $list;
             }
+        }
+        return Routes::NOT_FOUND;
+    }
+
+    private static function bin(): Routes
+    {
+        $emote = Emote::get((int)getUrlArray()[1]);
+        if (Emote::canViewEmote($emote)) {
+            $q = getDB()->prepare('SELECT data FROM emotes where id = ?');
+            $q->bind_param('i', $emote->id);
+            $q->execute();
+            $r = $q->get_result()->fetch_array()['data'];
+            header("content-type: application/octet-stream");
+            echo $r;
+            return Routes::SELF_SERVED;
+        }
+        return Routes::NOT_FOUND;
+    }
+
+    private static function json(): Routes
+    {
+        $emote = Emote::get((int)getUrlArray()[1]);
+        if (Emote::canViewEmote($emote)) {
+            $q = getDB()->prepare('SELECT data FROM emotes where id = ?');
+            $q->bind_param('i', $emote->id);
+            $q->execute();
+            $r = $q->get_result()->fetch_array()['data'];
+            $daemon = new EmoteDaemonClient();
+            $daemon->addData($r, 1);
+            header("content-type: application/json");
+            $r = $daemon->exchange(array(2))[0]['data'];
+            echo $r;
+
+            return Routes::SELF_SERVED;
         }
         return Routes::NOT_FOUND;
     }

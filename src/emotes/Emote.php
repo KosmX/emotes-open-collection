@@ -100,7 +100,7 @@ class Emote
         <p class="card-text">$desc</p>
         <p class="card-text"><small class="text-muted">$author</small></p>
         
-        <button class="btn btn-success"><i class="bi bi-download"></i></button>
+        <a href="e/$this->id/bin" class="btn btn-success" download="$title.emotecraft"><i class="bi bi-download"></i></a>
       </div>
     </div>
   </div>
