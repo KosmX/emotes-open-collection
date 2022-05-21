@@ -13,12 +13,6 @@ function debugger(): Routes
     var_dump($_FILES);
 
 
-    /** @var Emote $emote */
-    $emote = Emote::get(1);
-
-    $form = $emote->getEdit("/debug");
-    echo $form->build();
-
     var_dump(ceil(6/2));
 
     /*
@@ -38,6 +32,7 @@ function debugger(): Routes
     #file_put_contents('test.emotecraft', $result[1]['data']);
     var_dump($result);
     */
+
 
 
     return Routes::SELF_SERVED;

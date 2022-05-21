@@ -27,6 +27,9 @@ class index
         $R->all('~^\\d+\\/delete(\\/)?$~')->action(function () {return self::delete();});
         $R->all('~^\\d+\\/bin(\\/)?$~')->action(function () {return self::bin();});
         $R->all('~^\\d+\\/json(\\/)?$~')->action(function () {return self::json();});
+        $R->all('~^my(\\/)?$~')->action(function () {return self::userEmotes();});
+        $R->all('~^tmp(\\/)?$~')->action(function () {return self::unpublishedEmotes();});
+
 
         return $R->run(getCurrentPage());
     }
@@ -39,7 +42,7 @@ class index
      * emote fields: [id, uuid, emoteOwner, name, description, author, visibility, published]
      * @return IElement Emote list element
      */
-    public static function emoteList(string $filter = 'visibility >= 2', int $pageSize = 20): IElement {
+    public static function emoteList(string $filter = 'visibility >= 2 && published = true', int $pageSize = 20): IElement {
         $p = (int)($_GET['page']?? 0);
         $p *= $pageSize;
 
@@ -216,7 +219,12 @@ END
         if (UserHelper::getCurrentUser() === null) return Routes::NOT_FOUND;
         $element = new SimpleList();
         if (Method::POST->isActive() && isset($_FILES['emote'])) {
-            $emote = Emote::addEmote($_FILES['emote']);
+            try {
+                $emote = Emote::addEmote($_FILES['emote']);
+            } catch (\mysqli_sql_exception $e) {
+                $element->addElement(new AlertTag(new LiteralElement("Emote with this UUID already exists.")));
+                $emote = null;
+            }
             if ($emote === null) {
                 $element->addElement(new AlertTag(new LiteralElement("Emote upload failed, please check your file before re-uploading")));
             } else {
@@ -406,5 +414,56 @@ END
             return Routes::SELF_SERVED;
         }
         return Routes::NOT_FOUND;
+    }
+
+    public static function getStarEmoteFunction(): string
+    {
+
+        return <<<END
+<script>
+function star(target, emoteID) {
+    //TODO
+}
+</script>
+END;
+
+    }
+
+    private static function userEmotes(string $filter = 'published = true', int $pageSize = 20): IElement|Routes
+    {
+        if (UserHelper::getCurrentUser() == null) return Routes::NOT_FOUND;
+
+        $p = (int)($_GET['page'] ?? 0);
+        $p *= $pageSize;
+
+        //this is not very manageable
+        $owner = UserHelper::getCurrentUser()->userID;
+        if (isset($_GET['s'])) {
+            $s = "%{$_GET['s']}%";
+            $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where ($filter) && (name like ? or description like ?) && emoteOwner = ? limit ? OFFSET ?;");
+            $qr = getDB()->prepare("SELECT COUNT(id) as count FROM emotes where ($filter) && (name like ? or description like ?) && emoteOwner = ?;");
+            $q->bind_param('ssiii', $s, $s, $owner, $pageSize, $p);
+            $qr->bind_param('ssi', $s, $s, $owner);
+
+        } else {
+            $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where ($filter) && emoteOwner = ? limit ? OFFSET ?;");
+            $qr = getDB()->prepare("SELECT COUNT(id) as count  FROM emotes where ($filter) && emoteOwner = ?;");
+            $q->bind_param('iii', $owner, $pageSize, $p);
+            $qr->bind_param('i', $owner);
+        }
+        $q->execute();
+        $result = $q->get_result();
+        $qr->execute();
+        $count = $qr->get_result()->fetch_array()['count'];
+        //var_dump($count);
+        $list = self::createEmoteListElement($result);
+
+        $list->addElement(self::getPageButtons($count, $p / $pageSize, $pageSize));
+        return $list;
+    }
+
+    private static function unpublishedEmotes()
+    {
+        return self::userEmotes('published = false');
     }
 }

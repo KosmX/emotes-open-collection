@@ -68,7 +68,11 @@ class Emote
         $result = $query->get_result();
 
         if ($result->num_rows == 1) {
-            return new Emote($result->fetch_array());
+            $emote = new Emote($result->fetch_array());
+            if (!$emote->published) {
+                $emote->visibility = 2;
+            }
+            return $emote;
         }
         return null;
     }
@@ -85,6 +89,17 @@ class Emote
         $desc = htmlspecialchars($this->description);
         $author = htmlspecialchars($this->author);
 
+        $button = <<<END
+<a href="/e/$this->id/bin" class="btn btn-success" download="$title.emotecraft"><i class="bi bi-download"></i></a>
+END;
+        if (!$this->published) {
+            $button = <<<END
+<a href="/e/$this->id/edit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Publish</a>
+END;
+
+        }
+
+
         return new LiteralElement(<<<END
 <div class="card mb-3" style="max-width: 840px;">
   <div class="row g-0">
@@ -95,12 +110,12 @@ class Emote
     </div>
     <div class="col-md-8">
       <div class="card-body">
-      <a href="e/$this->id">
+      <a href="/e/$this->id">
         <h5 class="card-title">$title</h5></a>
         <p class="card-text">$desc</p>
         <p class="card-text"><small class="text-muted">$author</small></p>
         
-        <a href="e/$this->id/bin" class="btn btn-success" download="$title.emotecraft"><i class="bi bi-download"></i></a>
+        $button
       </div>
     </div>
   </div>
@@ -117,6 +132,13 @@ END);
     public function getEdit(string $callback, string $buttonTitle = "Save"): IElement
     {
         //TODO icon can NOT be deleted, only replaced
+
+        $options = self::option(0, "Private", $this->visibility);
+        $options .= self::option(1, "Unlisted", $this->visibility);
+        $options .= self::option(2, "Public", $this->visibility);
+        $options .= self::option(3, "Public & include in public ZIP", $this->visibility);
+
+
         return new LiteralElement(<<<END
 <form method="post" id="editform" action="$callback" enctype="multipart/form-data">
   <div class="mb-3">
@@ -138,15 +160,21 @@ END);
   <div class="mb-3">
     <label for="visibility" class="form-label">Emote visibility</label>
     <select name="visibility" class="form-select" form="editform" aria-label="Select visibility">
-    <option value="0">Private</option>
-    <option value="1">Unlisted</option>
-    <option value="2" selected="selected">Public</option>
-    <option value="3">Public & include in public ZIP</option>
+    $options
     </select>
   </div>
   <button type="submit" class="btn btn-primary">$buttonTitle</button>
 </form>
 END);
+    }
+
+    private static function option(int $value, string $text, int $selected): string
+    {
+        if ($selected == $value) {
+            return "<option value=\"$value\" selected=\"selected\">$text</option>";
+        } else {
+            return "<option value=\"$value\">$text</option>";
+        }
     }
 
     /**
@@ -157,8 +185,9 @@ END);
     public function processEdit(): bool|string
     {
         $this->name = $_POST['name']?? $this->name;
-        $this->description = $_POST['description']?? $this->description;
-        $this->author = $_POST['author']?? $this->author;
+        $this->description = $_POST['description']?? '';
+        $this->author = $_POST['author']?? '';
+        $this->visibility = (int)$_POST['visibility'];
 
         /** @var string|null $icon */
         $icon = null;
