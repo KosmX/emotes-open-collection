@@ -22,16 +22,13 @@ class index
 
         $R->all('~^new$~')->action(function () {return self::uploadEmote();});
         $R->get('~^\\d+\\/icon$~')->action(function () {return self::getIcon();});
+        $R->get('~^\\d+(\\/)?$~')->action(function () {return self::displaySingleEmote();});
+        $R->all('~^\\d+\\/edit(\\/)?$~')->action(function () {return self::edit();});
+        $R->all('~^\\d+\\/delete(\\/)?$~')->action(function () {return self::delete();});
 
         return $R->run(getCurrentPage());
     }
 
-    public static function getUserEmoteList(): ?IElement {
-        $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where visibility >= 2 limit 100"); //or emoteOwner = ? and published = true
-        $q->execute();
-        $result = $q->get_result();
-        return self::createEmoteListElement($result->fetch_all());
-    }
 
     /**
      * Get emote list with FILTER
@@ -182,9 +179,34 @@ END
         return $list;
     }
 
-    private static function edit()
+    private static function edit(): Routes|IElement
     {
-        return new LiteralElement("TODO");
+        /** @var Emote $emote */
+        $emote = Emote::get((int)getUrlArray()[1]);
+        if (Emote::canViewEmote($emote)) {
+            if (UserHelper::getCurrentUser() != null && $emote->ownerID == UserHelper::getCurrentUser()->userID) {
+                $list = new SimpleList();
+
+                if (Method::POST->isActive()) {
+                    $r = $emote->processEdit();
+                    if ($r === true) {
+                        $list->addElement(new AlertTag(new LiteralElement("Saved"), 'alert-success'));
+                    }
+                    else if (is_string($r)) {
+                        $list->addElement(new AlertTag(new LiteralElement($r)));
+                    }
+                    else {
+                        $list->addElement(new AlertTag(new LiteralElement("Unknown error, please check your input and try again!")));
+                    }
+                }
+
+                $t = $emote->published ? "Save" : "Publish!";
+                $list->addElement($emote->getEdit("edit", $t));
+                return $list;
+            }
+            return Routes::NOT_FOUND; //TODO use forbidden
+        }
+        return Routes::NOT_FOUND;
     }
 
     private static function uploadEmote(): IElement|Routes
@@ -241,5 +263,112 @@ END
 END;
         return Routes::SELF_SERVED;
 
+    }
+
+    private static function displaySingleEmote(): Routes|IElement
+    {
+        $emote = Emote::get((int)getUrlArray()[1]);
+        //The emote exists && (is not private || I'm the owner)
+        if ($emote != null && ($emote->visibility >= 1 || UserHelper::getCurrentUser() != null && $emote->ownerID == UserHelper::getCurrentUser()->userID)) {
+
+            $q = getDB()->prepare("SELECT COUNT(l.id) as likes FROM emotes join likes l on emotes.id = l.emoteID where emoteID = ?;");
+            $q->bind_param('i', $emote->id);
+            $q->execute();
+            $likes = $q->get_result()->fetch_array()['likes'];
+
+            $q = getDB()->prepare("SELECT u.displayName as displayName, u.username as user FROM emotes as e join users as u on e.emoteOwner = u.id where e.id = ?;");
+            $q->bind_param('i', $emote->id);
+            $q->execute();
+            $r = $q->get_result()->fetch_array();
+
+            $editButton = '';
+            if (UserHelper::getCurrentUser() != null && UserHelper::getCurrentUser()->userID == $emote->ownerID) {
+                $editButton = <<<END
+<a href="$emote->id/edit" type="button" class="btn btn-primary" style="margin-top: 24px"><i class="bi bi-pencil-square"></i> Edit</a>
+<a href="$emote->id/delete" type="button" class="btn btn-danger" style="margin-top: 24px"><i class="bi bi-trash"></i> Delete</a>
+END;
+            }
+
+            $formatter = new EmoteDaemonClient();
+            $q = getDB()->prepare('SELECT data FROM emotes where id = ?');
+            $q->bind_param('i', $emote->id);
+            $q->execute();
+            $ri = $q->get_result();
+
+            $hasIcon = '';
+            $formatter->addData($ri->fetch_array()['data'], 1);
+            $ri = $formatter->exchange(array(3));
+
+            $author = htmlspecialchars($emote->author);
+            $description = htmlspecialchars($emote->description);
+            $name = htmlspecialchars($emote->name);
+            if (strlen($ri[0]['data']) != 0) {
+                $hasIcon = <<<END
+<a href="$emote->id/icon" type="button" class="btn btn-light" style="margin-top: 12px" download="$name.png"><i class="bi bi-download"></i> Download PNG</a>
+END;
+
+            }
+
+            return new LiteralElement(<<<END
+<div>
+<img src="/e/$emote->id/icon" class="rounded float-start" width="240px" alt="emote icon" style="margin-right: 18px">
+<span class="float-start">
+<h1>$name</h1>
+<hr>
+<h3>Original author: $author</h3>
+<h5>$description</h5>
+<br><br>
+owner: <a href="/u/{$r['user']}">{$r['displayName']}</a>
+</span>
+<div class="float-none">
+<a href="$emote->id/bin" type="button" class="btn btn-success" style="margin-top: 24px" download="$name.emotecraft"><i class="bi bi-download"></i> Download</a>
+$editButton
+<hr>
+Download as traditional emote json and icon:
+<br>
+<small class="text-muted">You probably don't need this, but who knows</small>
+<br>
+<a href="$emote->id/json" type="button" class="btn btn-light" style="margin-top: 12px" download="$name.json"><i class="bi bi-download"></i> Download JSON</a>
+$hasIcon
+<br>
+</div>
+</div>
+
+END);
+        }
+        return Routes::NOT_FOUND;
+    }
+
+    private static function delete(): Routes|IElement
+    {
+        $emote = Emote::get((int)getUrlArray()[1]);
+        if ($emote !== null && UserHelper::getCurrentUser() !== null && $emote->ownerID === UserHelper::getCurrentUser()->userID) {
+            if (Method::POST->isActive() && isset($_POST['deleteEmote'])) {
+                $emote->deleteEmote();
+                return new LiteralElement(<<<END
+<div class="alert alert-success" role="alert">
+Emote deleted!
+</div>
+END);
+
+            } else {
+                $list = new SimpleList();
+                $list->addElement($emote->getCard());
+                $list->addElement(new LiteralElement(<<<END
+<h2>Are you sure, you want to delete this emote?</h2>
+<form method="post" action="delete">
+  <div class="mb-3 form-check">
+    <input name="deleteEmote" type="checkbox" class="form-check-input" id="exampleCheck1" aria-describedby="exampleCheckHelp" required>
+    <label class="form-check-label" for="exampleCheck1">I really want to delete this emote</label>
+    <div id="exampleCheckHelp" class="form-text">By deleting this emote, the UUID will be freed, you may re-upload it</div>
+  </div>
+  <button type="submit" class="btn btn-danger">Delete emote</button>
+</form>
+END
+));
+                return $list;
+            }
+        }
+        return Routes::NOT_FOUND;
     }
 }

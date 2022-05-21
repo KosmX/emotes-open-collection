@@ -9,8 +9,16 @@ use pageUtils\UserHelper;
 function getDefaultHeader(string $current = ''): Navbar {
     $menu = new Navbar();
 
-    $menu->addEntry(new LiteralEntry("Emotes", "emotes"));
     if (UserHelper::getCurrentUser() != null) {
+        $emotesEntry = new DropdownEntry('Emotes', 'emotes');
+
+        $emotesEntry->addEntry('/e', 'Emotes');
+        $emotesEntry->addEntry('/e/my', 'My emotes');
+        $emotesEntry->addEntry('/e/tmp', 'Unpublished emotes');
+
+        $menu->addEntry($emotesEntry);
+
+
         $userEntry = new DropdownEntry(UserHelper::getCurrentUser()->displayName, 'user');
 
         $userEntry->addEntry('/u', 'User page');
@@ -20,6 +28,7 @@ function getDefaultHeader(string $current = ''): Navbar {
 
         $menu->addEntry($userEntry);
     } else {
+        $menu->addEntry(new LiteralEntry("Emotes", "emotes"));
         $menu->addEntry(new LiteralEntry("Account", "user"));
     }
 

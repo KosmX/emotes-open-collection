@@ -167,7 +167,7 @@ END
     <label class="form-check-label" for="exampleCheck1">I want to delete my account</label>
     <div id="exampleCheckHelp" class="form-text">By deleting your account, every information will be permanently removed.</div>
   </div>
-  <button type="submit" class="btn btn-primary">Delete my account</button>
+  <button type="submit" class="btn btn-danger">Delete my account</button>
 </form>
 END));
 

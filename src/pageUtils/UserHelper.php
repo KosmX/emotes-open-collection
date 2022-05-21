@@ -250,7 +250,7 @@ END;
         if ($user == null) {
             return 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css';
         } else {
-            return '/bootstrap/css/bootstrap.css';
+            return 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css';
             //TODO user-specific information
         }
     }

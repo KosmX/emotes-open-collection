@@ -41,6 +41,8 @@ class PageElement implements IElement
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
+    <!-- Bootstrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="$css">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
 </head>

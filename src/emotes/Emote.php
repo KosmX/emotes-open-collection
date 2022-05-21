@@ -95,14 +95,12 @@ class Emote
     </div>
     <div class="col-md-8">
       <div class="card-body">
-        <h5 class="card-title">$title</h5>
+      <a href="e/$this->id">
+        <h5 class="card-title">$title</h5></a>
         <p class="card-text">$desc</p>
         <p class="card-text"><small class="text-muted">$author</small></p>
         
-        <button class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-</svg></button>
+        <button class="btn btn-success"><i class="bi bi-download"></i></button>
       </div>
     </div>
   </div>
@@ -118,7 +116,7 @@ END);
      */
     public function getEdit(string $callback, string $buttonTitle = "Save"): IElement
     {
-
+        //TODO icon can NOT be deleted, only replaced
         return new LiteralElement(<<<END
 <form method="post" id="editform" action="$callback" enctype="multipart/form-data">
   <div class="mb-3">
@@ -127,7 +125,7 @@ END);
   </div>
   <div class="mb-3">
     <label for="name" class="form-label">Emote name:</label>
-    <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelp" value="$this->name">
+    <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelp" value="$this->name" required>
   </div>
   <div class="mb-3">
     <label for="description" class="form-label">Description:</label>
@@ -164,7 +162,7 @@ END);
 
         /** @var string|null $icon */
         $icon = null;
-        if (isset($_FILES['icon'])) {
+        if (isset($_FILES['icon']) && $_FILES['icon']['error'] == 0) {
             $imageData = $_FILES['icon'];
             $type = exif_imagetype($imageData['tmp_name']);
             if ($type === false || $type !== IMAGETYPE_PNG) {
@@ -184,7 +182,7 @@ END);
         $getOldData->bind_param('i', $this->id);
         $getOldData->execute();
         $r = $getOldData->get_result();
-        $r = $r->fetch_array()[0]['data'];
+        $r = $r->fetch_array()['data'];
 
         $emoteService = new EmoteDaemonClient();
         $emoteService->addData($r, 1);
@@ -251,6 +249,32 @@ END);
         getDB()->commit();
         return $emote;
 
+    }
+
+    /**
+     * Can the emote be displayed
+     * @param Emote|null $emote
+     * @return bool
+     */
+    public static function canViewEmote(?Emote $emote): bool
+    {
+        return $emote != null && ($emote->visibility >= 1 || UserHelper::getCurrentUser() != null && $emote->ownerID == UserHelper::getCurrentUser()->userID);
+    }
+
+    /**
+     * Delete an emote, does not verify rights
+     * @return void
+     */
+    public function deleteEmote(): void
+    {
+        getDB()->begin_transaction();
+        $r = getDB()->prepare("DELETE likes from likes join emotes e on e.id = likes.emoteID where e.id = ?;");
+        $r->bind_param('i', $this->id);
+        $r->execute();
+        $r = getDB()->prepare('DELETE emotes from emotes where id = ?');
+        $r->bind_param('i', $this->id);
+        $r->execute();
+        getDB()->commit();
     }
 
 }
