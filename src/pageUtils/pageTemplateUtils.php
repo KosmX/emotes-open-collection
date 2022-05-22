@@ -29,6 +29,8 @@ function getDefaultHeader(string $current = ''): Navbar {
         $userEntry->addEntry('/u', 'User page');
         $userEntry->addEntry('/settings/profile', 'Profile settings');
         $userEntry->addSeparator();
+        $userEntry->addEntry('/themes', 'Themes');
+        $userEntry->addSeparator();
         $userEntry->addEntry('/logout', 'Log out');
 
         $menu->addEntry($userEntry);

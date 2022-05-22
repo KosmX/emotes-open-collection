@@ -11,7 +11,8 @@ create table if not exists users
     displayName    varchar(128) collate utf8mb4_0900_ai_ci,
     isEmailPublic  bool default false,
     theCheckbox    bool default false,
-    privileges     int default 0
+    privileges     int default 0,
+    theme          int default 0
 );
 
 create table if not exists auths
