@@ -12,6 +12,7 @@ use pageUtils\UserHelper;
 use routing\Method;
 use routing\Router;
 use routing\Routes;
+use function utils\getPageButtons;
 
 /**
  * If user is not logged in OR has no privileges, it will return 403.
@@ -28,11 +29,19 @@ class index
             $R->all('~^t\\/[^\\/]+(\\/)?$~')->action(function () {
                 return self::editTable(getUrlArray()[2]);
             });
+
             $R->all('~^e\\/\\d+(\\/)?$~')->action(function () {
                 return self::editEmote((int)getUrlArray()[2]);
             });
+            $R->get('~^e(\\/)?$~')->action(function () {
+                return self::listEmotes();
+            });
+            
             $R->all('~^u\\/[^\\/]+(\\/)?$~')->action(function () {
                 return self::editUser(getUrlArray()[2]);
+            });
+            $R->get('~^u(\\/)?$~')->action(function () {
+                return self::listUsers();
             });
 
             $R->get(Router::$EMPTY)->action(function () {return self::adminMenu();});
@@ -74,7 +83,6 @@ class index
             foreach ($item as $table) {
                 $tables .= <<<END
 <a class="btn btn-primary" href="/admin/t/$table" role="button">$table</a>
-
 END;
             }
         }
@@ -83,6 +91,10 @@ END;
 <h1>Tables:</h1>
 <hr>
 $tables
+<hr>
+<a href="admin/u" class="btn btn-primary">Users</a>
+<hr>
+<a href="admin/e" class="btn btn-primary">Emotes</a>
 END));
 
         return $list;
@@ -107,7 +119,7 @@ END));
             }
 
             $t = $emote->published ? "Save" : "Publish!";
-            $list->addElement($emote->getEdit("edit", $t));
+            $list->addElement($emote->getEdit("$emoteID", $t));
             return $list;
         }
         return Routes::NOT_FOUND;
@@ -151,5 +163,109 @@ END
         #$_SESSION['profEdit'] = serialize($user);
 
         return $elements;
+    }
+
+    private static function listUsers(): Routes|IElement
+    {
+        $p = (int)($_GET['p']?? 0);
+
+        $q = getDB()->prepare("SELECT COUNT(*) as count FROM users");
+        $q->execute();
+        $count = $q->get_result()->fetch_array()['count'];
+
+        $q = getDB()->prepare("SELECT id, username, displayName, email, isEmailPublic, theCheckbox FROM users LIMIT 64 OFFSET ?");
+        $q->bind_param('i', $p);
+        $q->execute();
+        $r = $q->get_result();
+
+        $rows = '';
+        foreach ($r as $item) {
+
+            $rows .= <<<END
+<tr>
+<td>$item[id]</td>
+<td>$item[username]</td>
+<td>$item[displayName]</td>
+<td>$item[email]</td>
+<td>$item[isEmailPublic]</td>
+<td>$item[theCheckbox]</td>
+<td><a href="u/$item[username]" class="btn btn-primary"><i class="bi bi-pencil-square"></i></a></td>
+</tr>
+END;}
+
+
+        $paginator = getPageButtons($count, $p, 64)->build();
+        return new LiteralElement(<<<END
+<div>
+<h1>Users</h1>
+<table class="table">
+<tr>
+<th>id</th>
+<th>username</th>
+<th>display name</th>
+<th>email</th>
+<th>is email public</th>
+<th>the Checkbox</th>
+<th>edit</th>
+</tr>
+$rows
+</table>
+$paginator
+</div>
+END);
+    }
+
+    private static function listEmotes()
+    {
+        $p = (int)($_GET['p']?? 0);
+
+        $q = getDB()->prepare("SELECT COUNT(*) as count FROM emotes");
+        $q->execute();
+        $count = $q->get_result()->fetch_array()['count'];
+
+        $q = getDB()->prepare("SELECT id, name, description, author, emoteOwner, visibility, published FROM emotes LIMIT 64 OFFSET ?");
+        $q->bind_param('i', $p);
+        $q->execute();
+        $r = $q->get_result();
+
+        $rows = '';
+        foreach ($r as $item) {
+            $name = htmlspecialchars($item['name']);
+            $description = htmlspecialchars($item['description']);
+            $author = htmlspecialchars($item['author']);
+            $rows .= <<<END
+<tr>
+<td>$item[id]</td>
+<td>$name</td>
+<td>$description</td>
+<td>$author</td>
+<td>$item[emoteOwner]</td>
+<td>$item[visibility]</td>
+<td>$item[published]</td>
+<td><a href="e/$item[id]" class="btn btn-primary"><i class="bi bi-pencil-square"></i></a></td>
+</tr>
+END;}
+
+
+        $paginator = getPageButtons($count, $p, 64)->build();
+        return new LiteralElement(<<<END
+<div>
+<h1>Emotes</h1>
+<table class="table">
+<tr>
+<th>id</th>
+<th>name</th>
+<th>description</th>
+<th>author</th>
+<th>ownerID</th>
+<th>visibility</th>
+<th>published</th>
+<th>edit</th>
+</tr>
+$rows
+</table>
+$paginator
+</div>
+END);
     }
 }

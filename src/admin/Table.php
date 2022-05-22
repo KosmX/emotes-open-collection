@@ -5,6 +5,7 @@ namespace admin;
 use elements\IElement;
 use elements\LiteralElement;
 use routing\Routes;
+use function utils\getPageButtons;
 
 /**
  * mysqli dynamic table helper
@@ -110,6 +111,10 @@ class Table implements IElement
         $page = (int)($_GET['p']?? 0);
         $page *= 64;
 
+        $q = getDB()->prepare("SELECT COUNT(*) as count FROM $this->table");
+        $q->execute();
+        $count = $q->get_result()->fetch_array()['count'];
+
         $q = getDB()->prepare("SELECT * FROM $this->table LIMIT 64 OFFSET ?;");
         $q->bind_param('i', $page); //Make it usable
         $q->execute();
@@ -157,9 +162,11 @@ END;
 
         }
 
+        $paginator = getPageButtons($count, $page, 64)->build();
         return <<<END
 <table class="table">
 $rows
 </table>
+$paginator
 END;}
 }

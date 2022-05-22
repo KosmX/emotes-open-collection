@@ -19,6 +19,10 @@ use function notFound\print404;
 
 $current = '';
 
+if (getCurrentPage() != '' && str_ends_with(parse_URL($_SERVER['REQUEST_URI'])['path'], '/')) {
+    redirect(getCurrentPage());
+    exit(0);
+}
 
 $R = new Router();
 
@@ -73,6 +77,7 @@ if ($result instanceof IElement) {
     //$page->addElement(new LiteralElement("Hello page builder"));
 
     echo $page->build();
+
 } else if ($result instanceof Routes) {
     switch ($result) {
         case Routes::NOT_FOUND:

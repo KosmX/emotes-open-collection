@@ -43,7 +43,7 @@ class index
      * emote fields: [id, uuid, emoteOwner, name, description, author, visibility, published]
      * @return IElement Emote list element
      */
-    public static function emoteList(string $filter = 'visibility >= 2 && published = true', int $pageSize = 1): IElement {
+    public static function emoteList(string $filter = 'visibility >= 2 && published = true', int $pageSize = 20): IElement {
         $p = (int)($_GET['p']?? 0);
         $p *= $pageSize;
 

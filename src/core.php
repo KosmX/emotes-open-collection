@@ -85,7 +85,10 @@ function cookieOrDefault(string $cookie, string $default, bool $setIfNull): stri
     }
 }
 
+$headerSent = false;
 function redirect(string $path): Routes {
     header("Location: $path");
+    global $headerSent;
+    $headerSent = true;
     return Routes::SELF_SERVED;
 }
