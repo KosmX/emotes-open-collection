@@ -73,6 +73,12 @@ if ($result instanceof IElement) {
             break;
         case Routes::SELF_SERVED:
             break;
+        case Routes::AUTH_REQUIRED:
+            print404(401);
+            break;
+        case Routes::INTERNAL_ERROR:
+            print404(500);
+            break;
         default:
             echo "unimplemented route: $result";
     }

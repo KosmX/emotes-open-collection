@@ -5,26 +5,41 @@ namespace notFound;
 use elements\LiteralElement;
 use elements\PageElement;
 
-function print404(): void {
 
-    http_response_code(404);
+function print404(int $error = 404): void {
+
+    $errors = array(
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented'
+    );
+
+
+    http_response_code($error);
 
     $site = new PageElement();
-    $site->title = 'EOC: Page not found!';
+    $site->title = "EOC: $errors[$error]!";
     $site->overrideCss = "/assets/404.css";
     $currentPage = substr(getCurrentPage(), 1);
+
+    $h1 = $errors[$error];
+    $h1 = str_replace(' ', '&nbsp;&nbsp;&nbsp;', $h1);
 
     $site->addElement( new LiteralElement(<<<END
 <div class="screen">
 <table>
     <tr><td>
-    <h1><snap class="title">Not &nbsp;&nbsp;Found!</snap></h1>
+    <h1><snap class="title">$h1!</snap></h1>
     </td></tr>
     <tr><td>
     <h2>/$currentPage &nbsp;&nbsp;forgot &nbsp;&nbsp;the &nbsp;&nbsp;first &nbsp;&nbsp;rule &nbsp;&nbsp;of &nbsp;&nbsp;Minecraft</h2>
     </td></tr>
     <tr><td>
-    <h2>Error: &nbsp;&nbsp;<span class="yellow">404</span></h2>
+    <h2>Error: &nbsp;&nbsp;<span class="yellow">$error</span></h2>
     </td></tr>
     <tr><td>
     <br><br><br>

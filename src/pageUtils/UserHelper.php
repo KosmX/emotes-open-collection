@@ -273,6 +273,24 @@ END;
         }
     }
 
+    /**
+     * @param int $id User ID
+     * @return UserHelper|null User or null if not found
+     */
+    public static function getUserFromID(int $id): ?UserHelper {
+        $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox FROM users where id = ? limit 1");
+        $query->bind_param('i', $id);
+        $query->execute();
+        $res = $query->get_result();
+
+        if ($res->num_rows == 1) {
+            $row = $res->fetch_array();
+            return new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id']);
+        } else {
+            return null;
+        }
+    }
+
     public static function logout():void {
         self::$INSTANCE = null;
         unset($_SESSION['user']);

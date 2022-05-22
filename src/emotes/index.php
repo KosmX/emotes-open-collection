@@ -121,7 +121,7 @@ class index
     </li>
 END;
         }
-        $currentUrl = $_SERVER['HTTP_HOST'].getCurrentPage().'?';
+        $currentUrl = getCurrentPage().'?';
         if (isset($_GET['from'])) {
             $currentUrl .= "from={$_GET['from']}&";
         }
@@ -177,6 +177,28 @@ END
         }
 
         $list = new SimpleList();
+
+        $page = getCurrentPage();
+        $userButton = '';
+        $currentSearch = $_GET['s']?? '';
+        if (isset($_GET['from']) && ($user = UserHelper::getUserFromID((int)$_GET['from'])) != null) {
+            $userButton = "<input type='hidden' name='from' value='$_GET[from]'>";
+
+            $list->addElement(new LiteralElement(<<<END
+<form method="get" target="$page">
+<input type="hidden" name="s" value="$currentSearch">
+<button type="submit" class="btn btn-light"><i class="bi bi-x-lg"></i> from: $user->displayName</button>
+</form>
+END));
+        }
+
+        $list->addElement(new LiteralElement(<<<END
+      <form class="d-flex" method="get" action="$page">
+        <input class="form-control me-2" type="search" name="s" placeholder="Search Emote" aria-label="Search" value="$currentSearch">$userButton
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+        <hr>
+END));
 
         foreach ($emotes as $emote) {
             $list->addElement($emote->getCard());
@@ -300,6 +322,7 @@ END;
 <a href="$emote->id/delete" type="button" class="btn btn-danger" style="margin-top: 24px"><i class="bi bi-trash"></i> Delete</a>
 END;
             }
+            $button = "<button type='submit' class='btn btn-info' disabled>$likes <i class='bi bi-star'></i> Star</button>";
             if (UserHelper::getCurrentUser() != null) {
                 $userID = UserHelper::getCurrentUser()->userID;
                 $q = getDB()->prepare("SELECT COUNT(userID) as 'liked' FROM likes as l join users u on u.id = l.userID where userID = ? && l.emoteID = ?;");
@@ -331,10 +354,10 @@ END;
                     $button = "<button type='submit' class='btn btn-info'>$likes <i class='bi bi-star'></i> Star</button>";
                 }
 
-                $editButton .= <<<END
+            }
+            $editButton .= <<<END
 <form method="post" target="$emote->id"><input type="hidden" name="like" value="1" />$button</form>
 END;
-            }
 
 
             $formatter = new EmoteDaemonClient();
