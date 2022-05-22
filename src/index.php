@@ -11,6 +11,7 @@ include 'pageUtils/pageTemplateUtils.php';
 
 use elements\IElement;
 use elements\PageElement;
+use pageUtils\UserHelper;
 use routing\Router;
 use routing\Routes;
 use user\AccountPage;
@@ -18,6 +19,10 @@ use function notFound\print404;
 
 $current = '';
 
+if (getCurrentPage() != '' && str_ends_with(parse_URL($_SERVER['REQUEST_URI'])['path'], '/')) {
+    redirect(getCurrentPage());
+    exit(0);
+}
 
 $R = new Router();
 
@@ -43,10 +48,16 @@ $R->all('~^\\/settings\\/delete$~')->action(function () use (&$current) {$curren
 
 $R->get('~^\\/logout$~')->action(function () {return AccountPage::logout();});
 
-$R->all('~^\\/debug(\\.php)?$~')->action(function () {return debugger();});
+$R->all('~^\\/debug(\\.php)?$~')->action(function () {
+    if (UserHelper::getCurrentUser() != null && UserHelper::getCurrentUser()->privileges >= 8) {
+        return debugger();
+    } else return Routes::NOT_FOUND;
+});
 $R->get('~^$~')->action(function () {return index_page::getIndex();});
 
 $R->all('~^\\/e(motes)?(\\/|$)~')->action(function () use (&$current) {$current = 'emotes'; return \emotes\index::index();});
+
+$R->all('~^\\/admin(\\/|$)~')->action(function () {return \admin\index::index();});
 
 
 
@@ -66,6 +77,7 @@ if ($result instanceof IElement) {
     //$page->addElement(new LiteralElement("Hello page builder"));
 
     echo $page->build();
+
 } else if ($result instanceof Routes) {
     switch ($result) {
         case Routes::NOT_FOUND:
@@ -78,6 +90,9 @@ if ($result instanceof IElement) {
             break;
         case Routes::INTERNAL_ERROR:
             print404(500);
+            break;
+        case Routes::FORBIDDEN:
+            print404(403);
             break;
         default:
             echo "unimplemented route: $result";

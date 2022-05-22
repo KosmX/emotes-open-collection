@@ -93,16 +93,25 @@ END
         if ($ret === true) {
             $userData = $auth->getVerifiedUserData();
             $isUserQuery = getDB()->prepare("SELECT uA.userID from auths join userAccounts uA on auths.id = uA.authID where auths.name = ? and uA.platformUserID = ?");
-            $method = $auth->getName();
-            $isUserQuery->bind_param('si', $method, $userData['id']);
+            $authName = $auth->getName();
+            $isUserQuery->bind_param('si', $authName, $userData['id']);
             $isUserQuery->execute();
 
             $res = $isUserQuery->get_result();
             $isUserQuery->close();
 
 
-            if($res->num_rows == 1) {
+            if($res->num_rows == 1) { //User is already connected to this OAuth
                 $_SESSION['user'] = serialize($res->fetch_array()['userID']);
+                $_SESSION['authMode'] = $authName;
+
+                getDB()->begin_transaction();
+                $q = getDB()->prepare('UPDATE userAccounts join auths a on a.id = userAccounts.authID SET userAccounts.token = ? where userID = ? && a.name = ?;');
+                $token = $auth->getToken();
+                $q->bind_param('sii', $token, UserHelper::getCurrentUser()->userID, $authName);
+                $q->execute();
+                getDB()->commit();
+
                 redirect('/u');
                 return AccountPage::getAccountPage(UserHelper::getCurrentUser());
             } else {

@@ -44,7 +44,7 @@ class index
      * @return IElement Emote list element
      */
     public static function emoteList(string $filter = 'visibility >= 2 && published = true', int $pageSize = 20): IElement {
-        $p = (int)($_GET['page']?? 0);
+        $p = (int)($_GET['p']?? 0);
         $p *= $pageSize;
 
         //this is not very manageable
@@ -83,7 +83,7 @@ class index
         //var_dump($count);
         $list = self::createEmoteListElement($result);
 
-        $list->addElement(self::getPageButtons($count, $p/$pageSize, $pageSize));
+        $list->addElement(\utils\getPageButtons($count, $p/$pageSize, $pageSize));
         return $list;
     }
 
@@ -95,7 +95,7 @@ class index
      * @return IElement Emote list element
      */
     public static function searchedEmoteList(string $search, string $filter = 'visibility >= 2', int $pageSize = 20): IElement {
-        $p = (int)($_GET['page']?? 0);
+        $p = (int)($_GET['p']?? 0);
         $p *= $pageSize;
         $q = getDB()->prepare("SELECT id, uuid, emoteOwner as 'ownerID', name, description, author, visibility, published FROM emotes where ($filter) && (name like ? or description like ?) limit ? OFFSET ?"); //or emoteOwner = ? and published = true
         $q->bind_param('ii', $pageSize, $p);
@@ -105,68 +105,6 @@ class index
     }
 
 
-    public static function getPageButtons(int $length, int $currentPage, int $pageSize = 20): IElement
-    {
-        $length = min($length, 1);
-        $maxPage = ceil($length/$pageSize);
-        $currentPage = min($maxPage - 1, $currentPage); //before something bad happens
-        $before = min(2, $currentPage);
-        $after = min(2, $maxPage - $currentPage - 1);
-
-        $pages = '';
-        if ($currentPage > 2) {
-            $pages .= <<<END
-    <li class="page-item disabled">
-      <span class="page-link">...</span>
-    </li>
-END;
-        }
-        $currentUrl = getCurrentPage().'?';
-        if (isset($_GET['from'])) {
-            $currentUrl .= "from={$_GET['from']}&";
-        }
-        if (isset($_GET['s'])) {
-            $currentUrl .= "s={$_GET['s']}&";
-        }
-
-        for ($i = 0; $i < $before; $i++) {
-            $index = $currentPage - $before + $i;
-            $iPlus = $index + 1;
-            $pages .= <<<END
-    <li class="page-item">
-      <a href="/{$currentUrl}p=$index" class="page-link">$iPlus</a>
-    </li>
-END;
-        }
-
-        $iPlus = $currentPage + 1;
-        $pages .= <<<END
-    <li class="page-item active">
-      <span class="page-link">
-        $iPlus
-      </span>
-    </li>
-END;
-
-        for ($i = 0; $i < $after; $i++) {
-            $index = $currentPage + $i;
-            $iPlus = $index + 1;
-            $pages .= <<<END
-    <li class="page-item">
-      <a href="/{$currentUrl}p=$index" class="page-link">$iPlus</a>
-    </li>
-END;
-        }
-
-        return new LiteralElement(<<<END
-<nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-    $pages
-  </ul>
-</nav>
-END
-);
-    }
 
     private static function createEmoteListElement(\mysqli_result $list): SimpleList
     {
@@ -495,7 +433,7 @@ END;
     {
         if (UserHelper::getCurrentUser() == null) return Routes::NOT_FOUND;
 
-        $p = (int)($_GET['page'] ?? 0);
+        $p = (int)($_GET['p'] ?? 0);
         $p *= $pageSize;
 
         //this is not very manageable
@@ -520,7 +458,7 @@ END;
         //var_dump($count);
         $list = self::createEmoteListElement($result);
 
-        $list->addElement(self::getPageButtons($count, $p / $pageSize, $pageSize));
+        $list->addElement(\utils\getPageButtons($count, $p / $pageSize, $pageSize));
         return $list;
     }
 
@@ -534,7 +472,7 @@ END;
         if (UserHelper::getCurrentUser() == null) return Routes::NOT_FOUND;
 
 
-        $p = (int)($_GET['page']?? 0);
+        $p = (int)($_GET['p']?? 0);
         $p *= $pageSize;
 
         $userID = UserHelper::getCurrentUser()->userID;
@@ -559,7 +497,7 @@ END;
         //var_dump($count);
         $list = self::createEmoteListElement($result);
 
-        $list->addElement(self::getPageButtons($count, $p/$pageSize, $pageSize));
+        $list->addElement(\utils\getPageButtons($count, $p/$pageSize, $pageSize));
         return $list;
     }
 }

@@ -5,6 +5,7 @@ namespace pageUtils;
 # Only do 1 query per user request, and keep the important info available
 use elements\IElement;
 use elements\LiteralElement;
+use user\auth\GitHub;
 use user\RegisterUser;
 
 class UserHelper
@@ -17,6 +18,7 @@ class UserHelper
     public bool $publicEmail;
     public bool $theCheckbox;
     public ?int $userID; //non null until registered,
+    public int $privileges = 0;
 
     private ?string $usernameInvalid = null;
 
@@ -28,7 +30,7 @@ class UserHelper
      * @param bool $theCheckbox
      * @param int|null $userID
      */
-    public function __construct(string $uname, ?string $displayName, ?string $email, bool $publicEmail = false, bool $theCheckbox = false, ?int $userID = null)
+    public function __construct(string $uname, ?string $displayName, ?string $email, bool $publicEmail = false, bool $theCheckbox = false, ?int $userID = null, int $privileges = 0)
     {
         $this->uname = $uname;
         $this->displayName = $displayName ?? $uname;
@@ -36,6 +38,7 @@ class UserHelper
         $this->publicEmail = $publicEmail;
         $this->theCheckbox = $theCheckbox;
         $this->userID = $userID;
+        $this->privileges = $privileges;
     }
 
 
@@ -52,13 +55,14 @@ class UserHelper
 
         return new LiteralElement(<<<FORM
 <form method="post" action="$target">
-  <div class="mb-3">
     <label for="username" class="form-label">User name</label>
-    <span class="input-group-text" id="inputGroupPrepend3">@</span>
-    <input name="username" type="text" class="form-control$unameValid" id="username" aria-describedby="usernameHelp" value="$this->uname" pattern="^[a-zA-Z0-9]+$" maxlength="128" minlength="3">
-    <div id="usernameHelp" class="form-text">It will be your user URL. For example: emotes.kosmx.dev/u/kosmx<br>It must be unique.</div>
+  <div class="mb-3 input-group">
+    <span class="input-group-text" id="basic-addon1">@</span>
+    <input name="username" type="text" class="form-control$unameValid" id="username" aria-describedby="userHelp basic-addon1" value="$this->uname" pattern="^[a-zA-Z0-9]+$" maxlength="128" minlength="3">
     $unameFeedback
   </div>
+  <div class="form-text" id="userHelp">It will be your user URL. For example: emotes.kosmx.dev/u/kosmx<br>It must be unique.</div>
+  
   <div class="mb-3">
     <label for="displayname" class="form-label">Display name</label>
     <input name="displayname" type="text" class="form-control" id="displayname" aria-describedby="displaynameHelp" value="$this->displayName" maxlength="128" minlength="1">
@@ -152,6 +156,13 @@ FORM);
 
     public function deleteUser(): void
     {
+        $this->deleteUserQuery();
+        self::logout();
+    }
+
+    public function deleteUserQuery(): void
+    {
+
         getDB()->begin_transaction();
         $removeLikes = getDB()->prepare("DELETE FROM likes where userID = ?;");
         $removeLikes->bind_param('i', $this->userID);
@@ -170,7 +181,6 @@ FORM);
         $removeUser->execute();
         getDB()->commit();
 
-        self::logout();
     }
 
 
@@ -230,14 +240,14 @@ END;
                 return null;
             }
 
-            $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox FROM users where id = ? limit 1");
+            $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox, privileges FROM users where id = ? limit 1");
             $query->bind_param('i', $userID);
             $query->execute();
             $res = $query->get_result();
 
             if ($res->num_rows == 1) {
                 $row = $res->fetch_array();
-            self::$INSTANCE = new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id']);
+            self::$INSTANCE = new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id'], $row['privileges']);
             } else {
                 unset($_SESSION['user']);
             }

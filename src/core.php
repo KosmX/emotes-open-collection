@@ -67,6 +67,7 @@ function getCurrentPage(): string
     return rtrim(parse_url($_SERVER['REQUEST_URI'])['path'], '/');
 }
 
+// ['e', '42', 'edit']
 function getUrlArray(): array
 {
     return explode("/", substr(getCurrentPage(), 1));
@@ -84,7 +85,10 @@ function cookieOrDefault(string $cookie, string $default, bool $setIfNull): stri
     }
 }
 
+$headerSent = false;
 function redirect(string $path): Routes {
     header("Location: $path");
+    global $headerSent;
+    $headerSent = true;
     return Routes::SELF_SERVED;
 }
