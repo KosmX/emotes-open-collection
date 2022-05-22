@@ -6,7 +6,6 @@ use elements\bootstrap\Button;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
-use elements\SubmitConstantButton;
 use pageUtils\UserHelper;
 use routing\Method;
 use routing\Router;
@@ -101,9 +100,31 @@ class AccountPage
             $emailField = $user->email;
         }
 
+        $q = getDB()->prepare("SELECT COUNT(DISTINCT e.id) as 'emotes', COUNT(DISTINCT l.emoteID) as 'likes' from users as u left join likes l on u.id = l.userID left join emotes e on u.id = e.emoteOwner where u.id = ? group by userID;");
+        $q->bind_param('i', $user->userID);
+        $q->execute();
+        $r = $q->get_result()->fetch_array();
+
+        $buttonText = $user->displayName;
+        $lastChar = substr($user->displayName, -1);
+        if ($lastChar == 's' || $lastChar == 'S') {
+            $buttonText .= '\' '; //The names last char is s, we use 's differently
+        } else {
+            $buttonText .= 's ';
+        }
+        $buttonText .= "emotes ($r[emotes])";
+
         $elements->addElement(new LiteralElement(<<<END
 <h1>$user->displayName</h1>
-$emailField
+<h5>$emailField</h5>
+<br>
+<i class="bi bi-star-fill"></i> Starred: $r[likes]
+<hr>
+<form method="get" action="/e">
+<input type="hidden" name="from" value="$user->userID">
+<button type="submit" class="btn btn-info">$buttonText</button>
+</form>
+
 END
 ));
 
