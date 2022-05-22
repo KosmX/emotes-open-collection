@@ -67,6 +67,7 @@ function getCurrentPage(): string
     return rtrim(parse_url($_SERVER['REQUEST_URI'])['path'], '/');
 }
 
+// ['e', '42', 'edit']
 function getUrlArray(): array
 {
     return explode("/", substr(getCurrentPage(), 1));

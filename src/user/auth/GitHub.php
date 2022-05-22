@@ -15,7 +15,6 @@ class GitHub implements IAuthMethod
 
     private string $state;
     private ?string $token = null;
-    private ?string $tokenType = null;
 
     private static string $clientID = "154d6d89f8cf32b9275e"; //GH OAuth Client ID
     public function __construct(string $url)
@@ -42,7 +41,7 @@ END
         return new SubmitConstantButton($ghLogin, $params, "get", "https://github.com/login/oauth/authorize");
     }
 
-    function authCallback(): mixed
+    function authCallback(): bool|IElement
     {
         if (isset($_GET['code'])) {
             $state = $_GET['state'] ?? '';
@@ -73,7 +72,6 @@ END
 
                 if (isset($result['access_token'])) {
                     $this->token = $result['access_token']; // :D Auth success!
-                    $this->tokenType = $result['token_type'];
                     return true;
                 } else return false;
 

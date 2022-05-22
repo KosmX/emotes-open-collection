@@ -10,4 +10,5 @@ enum Routes
     case DEFAULT;
     case AUTH_REQUIRED;
     case INTERNAL_ERROR;
+    case FORBIDDEN;
 }
