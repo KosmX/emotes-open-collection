@@ -156,6 +156,13 @@ FORM);
 
     public function deleteUser(): void
     {
+        $this->deleteUserQuery();
+        self::logout();
+    }
+
+    public function deleteUserQuery(): void
+    {
+
         getDB()->begin_transaction();
         $removeLikes = getDB()->prepare("DELETE FROM likes where userID = ?;");
         $removeLikes->bind_param('i', $this->userID);
@@ -174,7 +181,6 @@ FORM);
         $removeUser->execute();
         getDB()->commit();
 
-        self::logout();
     }
 
 
