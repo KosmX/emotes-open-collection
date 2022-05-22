@@ -110,7 +110,7 @@ class AccountPage
         if ($lastChar == 's' || $lastChar == 'S') {
             $buttonText .= '\' '; //The names last char is s, we use 's differently
         } else {
-            $buttonText .= 's ';
+            $buttonText .= '\'s ';
         }
         $buttonText .= "emotes ($r[emotes])";
 
