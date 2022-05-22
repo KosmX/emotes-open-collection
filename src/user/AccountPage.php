@@ -19,29 +19,12 @@ class AccountPage
 {
     static function getPage(): ?object
     {
-        $array = getUrlArray();
-        /*
-        if (sizeof($array) == 1) {
-            return self::currentUser();
-        } else if (sizeof($array) == 2) {
-            //TODO Display public user page
-        } else {
-            return Routes::NOT_FOUND;
-        }
-        return null;
-        */
-
         $R = new Router(1);
 
         $R->all(Router::$EMPTY)->action(function () {return self::userOverview();});
         $R->all('~^auth\\/[^\\/]+$~')->action(function () {return self::userOverview();});
 
-        //$R->all('~^register(\\/|$)~')->action(function () {return self::registerUser();});
 
-
-        #$R->get('~^oauth\\/~')->action(function () {return self::registerUser();});
-
-        //$R->all(`~%~`);
         return $R->run(getCurrentPage());
     }
 
