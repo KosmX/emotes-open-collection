@@ -168,7 +168,7 @@ END);
 END);
     }
 
-    private static function option(int $value, string $text, int $selected): string
+    public static function option(int $value, string $text, int $selected): string
     {
         if ($selected == $value) {
             return "<option value=\"$value\" selected=\"selected\">$text</option>";

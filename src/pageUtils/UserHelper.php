@@ -19,6 +19,16 @@ class UserHelper
     public bool $theCheckbox;
     public ?int $userID; //non null until registered,
     public int $privileges = 0;
+    public int $theme;
+
+    public static array $themes = array(
+        0 => array('Default', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css'),
+        1 => array('Sketchy', 'https://bootswatch.com/5/sketchy/bootstrap.min.css'),
+        2 => array('Quartz', 'https://bootswatch.com/5/quartz/bootstrap.min.css'),
+        3 => array('Morph', 'https://bootswatch.com/5/morph/bootstrap.min.css'),
+        4 => array('Darkly', 'https://bootswatch.com/5/darkly/bootstrap.min.css'),
+        5 => array('Slate', 'https://bootswatch.com/5/slate/bootstrap.min.css')
+    );
 
     private ?string $usernameInvalid = null;
 
@@ -30,7 +40,7 @@ class UserHelper
      * @param bool $theCheckbox
      * @param int|null $userID
      */
-    public function __construct(string $uname, ?string $displayName, ?string $email, bool $publicEmail = false, bool $theCheckbox = false, ?int $userID = null, int $privileges = 0)
+    public function __construct(string $uname, ?string $displayName, ?string $email, bool $publicEmail = false, bool $theCheckbox = false, ?int $userID = null, int $privileges = 0, int $theme = 0)
     {
         $this->uname = $uname;
         $this->displayName = $displayName ?? $uname;
@@ -39,6 +49,7 @@ class UserHelper
         $this->theCheckbox = $theCheckbox;
         $this->userID = $userID;
         $this->privileges = $privileges;
+        $this->theme = $theme;
     }
 
 
@@ -68,6 +79,7 @@ class UserHelper
     <input name="displayname" type="text" class="form-control" id="displayname" aria-describedby="displaynameHelp" value="$this->displayName" maxlength="128" minlength="1">
     <div id="displaynameHelp" class="form-text">Fancy display name, does support unicode 😉</div>
   </div>
+  <hr>
   <div class="mb-3">
     <label for="email" class="form-label">Email address</label>
     <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" value="$this->email">
@@ -240,14 +252,14 @@ END;
                 return null;
             }
 
-            $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox, privileges FROM users where id = ? limit 1");
+            $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox, privileges, theme FROM users where id = ? limit 1");
             $query->bind_param('i', $userID);
             $query->execute();
             $res = $query->get_result();
 
             if ($res->num_rows == 1) {
                 $row = $res->fetch_array();
-            self::$INSTANCE = new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id'], $row['privileges']);
+            self::$INSTANCE = new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id'], $row['privileges'], $row['theme']);
             } else {
                 unset($_SESSION['user']);
             }
@@ -258,10 +270,9 @@ END;
     public static function getTheme(): string {
         $user = self::getCurrentUser();
         if ($user == null) {
-            return 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css';
+            return self::$themes[0][1];
         } else {
-            return 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css';
-            //TODO user-specific information
+            return self::$themes[$user->theme][1];
         }
     }
 
@@ -270,14 +281,14 @@ END;
      * @return UserHelper|null User or null if not found
      */
     public static function getUser(string $name): ?UserHelper {
-        $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox FROM users where username = ? limit 1");
+        $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox, privileges, theme FROM users where username = ? limit 1");
         $query->bind_param('s', $name);
         $query->execute();
         $res = $query->get_result();
 
         if ($res->num_rows == 1) {
             $row = $res->fetch_array();
-            return new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id']);
+            return new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id'], $row['privileges'], $row['theme']);
         } else {
             return null;
         }
@@ -288,14 +299,14 @@ END;
      * @return UserHelper|null User or null if not found
      */
     public static function getUserFromID(int $id): ?UserHelper {
-        $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox FROM users where id = ? limit 1");
+        $query = getDB()->prepare("SELECT id, email, username, displayName, isEmailPublic, theCheckbox, privileges, theme FROM users where id = ? limit 1");
         $query->bind_param('i', $id);
         $query->execute();
         $res = $query->get_result();
 
         if ($res->num_rows == 1) {
             $row = $res->fetch_array();
-            return new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id']);
+            return new UserHelper($row['username'], $row['displayName'], $row['email'], $row['isEmailPublic'] != 0, $row['theCheckbox'] != null, $row['id'], $row['privileges'], $row['theme']);
         } else {
             return null;
         }

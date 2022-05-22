@@ -45,6 +45,7 @@ $R->all('~^\\/u(ser)?$~')->action(function () use (&$current) {
 $R->all('~^\\/settings\\/(editP|p)rofile(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return AccountPage::userSettings();});
 $R->all('~^\\/settings\\/(editP|p)rofile(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return AccountPage::userSettings();});
 $R->all('~^\\/settings\\/delete$~')->action(function () use (&$current) {$current = 'user'; return AccountPage::deleteUser();});
+$R->all('~^\\/themes$~')->action(function () use (&$current) {$current = 'user'; return AccountPage::themes();});
 
 $R->get('~^\\/logout$~')->action(function () {return AccountPage::logout();});
 

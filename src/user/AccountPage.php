@@ -6,6 +6,7 @@ use elements\bootstrap\Button;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
+use emotes\Emote;
 use pageUtils\UserHelper;
 use routing\Method;
 use routing\Router;
@@ -18,29 +19,12 @@ class AccountPage
 {
     static function getPage(): ?object
     {
-        $array = getUrlArray();
-        /*
-        if (sizeof($array) == 1) {
-            return self::currentUser();
-        } else if (sizeof($array) == 2) {
-            //TODO Display public user page
-        } else {
-            return Routes::NOT_FOUND;
-        }
-        return null;
-        */
-
         $R = new Router(1);
 
         $R->all(Router::$EMPTY)->action(function () {return self::userOverview();});
         $R->all('~^auth\\/[^\\/]+$~')->action(function () {return self::userOverview();});
 
-        //$R->all('~^register(\\/|$)~')->action(function () {return self::registerUser();});
 
-
-        #$R->get('~^oauth\\/~')->action(function () {return self::registerUser();});
-
-        //$R->all(`~%~`);
         return $R->run(getCurrentPage());
     }
 
@@ -193,6 +177,53 @@ END
 END));
 
         return $elements;
+    }
+
+    public static function themes(): Routes|IElement
+    {
+        if (UserHelper::getCurrentUser() != null) {
+            $list = new SimpleList();
+
+            if (isset($_POST['theme'])) {
+                $theme = (int)$_POST['theme'];
+                if ($theme < sizeof(UserHelper::$themes)) {
+                    UserHelper::getCurrentUser()->theme = $theme;
+
+                    getDB()->begin_transaction();
+                    $userID = UserHelper::getCurrentUser()->userID;
+                    $q = getDB()->prepare('UPDATE users SET theme = ? where id = ?');
+                    $q->bind_param('ii', $theme, $userID);
+                    $q->execute();
+                    getDB()->commit();
+
+                } else {
+                    $list->addElement(new AlertTag(new LiteralElement("Selected theme is invalid")));
+                }
+
+            }
+            $options = '';
+            $i = 0;
+            foreach (UserHelper::$themes as $theme) {
+                $options .= Emote::option($i, $theme[0], UserHelper::getCurrentUser()->theme);
+                $i++;
+            }
+
+
+            $list->addElement(new LiteralElement(<<<END
+<form action="themes" method="post">
+<select class="form-select" aria-label="Select theme" name="theme">
+    $options
+</select>
+<hr>
+<button type="submit" class="btn btn-success">Select theme!</button>
+</form>
+END
+));
+
+            return $list;
+        }
+
+        return Routes::FORBIDDEN;
     }
 
 }
