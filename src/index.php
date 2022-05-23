@@ -24,6 +24,10 @@ if (getCurrentPage() != '' && str_ends_with(parse_URL($_SERVER['REQUEST_URI'])['
     exit(0);
 }
 
+if (UserHelper::getCurrentUser() == null || UserHelper::getCurrentUser()->privileges < 2) {
+    error_reporting(0);
+}
+
 $R = new Router();
 
 
