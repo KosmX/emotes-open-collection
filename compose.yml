@@ -20,7 +20,7 @@ services:
             db_db: emotes
             java: java
     db:
-        image: mysql:latest
+        image: mariadb:latest
         environment:
             MYSQL_ROOT_PASSWORD: iPassword
             MYSQL_USER: iUser
