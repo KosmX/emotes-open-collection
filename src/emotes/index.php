@@ -330,9 +330,10 @@ END;
             PageElement::$meta = <<<META
     <meta content="$name" property="og:title" />
     <meta content="$description" property="og:description" />
-    <meta content="$emote->id" property="og:url" />
     <meta content="$emote->id/icon.png" property="og:image" />
     <meta name="author" content="$author" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#03FCC2">
     <link type="application/json+oembed" href="https://emotes.kosmx.dev/e/$emote->id/embed.json">
 META;
 
@@ -531,7 +532,7 @@ END;
    "author_name": "$emote->name",
    "author_url": "https://emotes.kosmx.dev/e/$emote->id",
    "provider_name": "Download emote",
-   "provider_url": "https://emotes.kosmx.dev/e/$emote->id\bin"
+   "provider_url": "https://emotes.kosmx.dev/e/$emote->id/bin"
 }
 END;
             return Routes::SELF_SERVED;
