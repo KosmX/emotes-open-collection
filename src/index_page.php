@@ -18,8 +18,10 @@ class index_page
 <hr>
 <br><br>
 <h3>Emotecraft mod</h3>
-<h5><a href="https://emotecraft.kosmx.dev/>">Emotecraft Wiki</a> </h5>
-<small>by <a href="https://github.com/Kale-Ko">KaleKo</a></small>
+<h5 style="margin-bottom: 0"><a href="https://emotecraft.kosmx.dev/>">Emotecraft Wiki</a> </h5>
+<small>wiki made by <a href="https://github.com/Kale-Ko">KaleKo</a></small>
+<br>
+<br>
 <h5><b>Download the mod:</b></h5>
 <ul>
 <li>CurseForge:
