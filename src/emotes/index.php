@@ -525,12 +525,10 @@ END;
         $emote = Emote::get((int)getUrlArray()[1]);
         if (Emote::canViewEmote($emote)) {
 
-
             header("content-type: application/json");
             echo <<<END
 {
-   "author_name": "$emote->name",
-   "author_url": "https://emotes.kosmx.dev/e/$emote->id",
+   "author_name": "$emote->author",
    "provider_name": "emotes.kosmx.dev",
    "provider_url": "https://emotes.kosmx.dev/"
 }
