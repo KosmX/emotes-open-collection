@@ -22,13 +22,15 @@ class index
         $R->get(Router::$EMPTY)->action(function () {return self::emoteList();});
 
         $R->all('~^new$~')->action(function () {return self::uploadEmote();});
-        $R->get('~^\\d+\\/icon$~')->action(function () {return self::getIcon();});
         $R->all('~^\\d+(\\/)?$~')->action(function () {return self::displaySingleEmote();});
         $R->all('~^\\d+\\/edit(\\/)?$~')->action(function () {return self::edit();});
         $R->all('~^\\d+\\/delete(\\/)?$~')->action(function () {return self::delete();});
-        $R->all('~^\\d+\\/bin(\\/)?$~')->action(function () {return self::bin();});
-        $R->all('~^\\d+\\/json(\\/)?$~')->action(function () {return self::json();});
-        $R->all('~^\\d+\\/embed.json(\\/)?$~')->action(function () {return self::embed();});
+
+        $R->get('~^\\d+\\/icon$~')->action(function () {return self::getIcon();});
+        $R->get('~^\\d+\\/bin(\\/)?$~')->action(function () {return self::bin();});
+        $R->get('~^\\d+\\/json(\\/)?$~')->action(function () {return self::json();});
+        $R->get('~^\\d+\\/embed\\.json(\\/)?$~')->action(function () {return self::embed();});
+        $R->get('~^\\d+\\/icon\\.png$~')->action(function () {return self::getIcon(false);});
 
         $R->all('~^my(\\/)?$~')->action(function () {return self::userEmotes();});
         $R->all('~^tmp(\\/)?$~')->action(function () {return self::unpublishedEmotes();});
@@ -210,7 +212,7 @@ END
 
     }
 
-    private static function getIcon(): Routes
+    private static function getIcon(bool $fallback = true): Routes
     {
         $id = (int)getUrlArray()[1];
         $emote = Emote::get($id);
@@ -231,12 +233,14 @@ END
             }
 
         }
-        header("content-type: image/svg+xml");
-        echo <<<END
+        if ($fallback) {
+            header("content-type: image/svg+xml");
+            echo <<<END
 <svg class="bd-placeholder-img img-fluid rounded-start" width="240" height="240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
 END;
-        return Routes::SELF_SERVED;
-
+            return Routes::SELF_SERVED;
+        }
+        return Routes::NOT_FOUND;
     }
 
     private static function displaySingleEmote(): Routes|IElement
@@ -327,7 +331,7 @@ END;
     <meta content="$name" property="og:title" />
     <meta content="$description" property="og:description" />
     <meta content="$emote->id" property="og:url" />
-    <meta content="$emote->id/icon" property="og:image" />
+    <meta content="$emote->id/icon.png" property="og:image" />
     <meta name="author" content="$author" />
     <link type="application/json+oembed" href="https://emotes.kosmx.dev/e/$emote->id/embed.json">
 META;
@@ -524,17 +528,10 @@ END;
             header("content-type: application/json");
             echo <<<END
 {
-  "title": "$emote->name",
-  "description": "$emote->description",
-  "url": "https://emotes.kosmx.dev/e/$emote->id",
-  "color": 121212,
-  "image": {
-    "url": "https://emotes.kosmx.dev/e/$emote->id/icon"
-  },
-  "author": {
-    "name": "$emote->author",
-    "url": "https://discordapp.com"
-  }
+   "author_name": "$emote->name",
+   "author_url": "https://emotes.kosmx.dev/e/$emote->id",
+   "provider_name": "Download emote",
+   "provider_url": "https://emotes.kosmx.dev/e/$emote->id\bin"
 }
 END;
             return Routes::SELF_SERVED;
