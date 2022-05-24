@@ -1,4 +1,4 @@
-# [Emotes-open-collection](emotes.kosmx.dev)
+# [Emotes-open-collection](https://emotes.kosmx.dev)
 An Open Source website for [Emotecraft](https://github.com/KosmX/emotes) emotes  
 And a University homework ;)
 
