@@ -6,6 +6,8 @@ use pageUtils\UserHelper;
 
 class PageElement implements IElement
 {
+    static ?string $meta = null;
+
     use ListTrait;
 
     public string $title = "Emotes Open Collection";
@@ -30,6 +32,8 @@ class PageElement implements IElement
             $css = $this->overrideCss;
         }
 
+        $meta = self::$meta ?? '';
+
         return <<<END
 <!DOCTYPE html>
 <html lang="en">
@@ -40,6 +44,7 @@ class PageElement implements IElement
     
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    $meta
     
     <!-- Bootstrap icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">

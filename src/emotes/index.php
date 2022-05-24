@@ -5,6 +5,7 @@ namespace emotes;
 use elements\AlertTag;
 use elements\IElement;
 use elements\LiteralElement;
+use elements\PageElement;
 use elements\SimpleList;
 use java\EmoteDaemonClient;
 use pageUtils\UserHelper;
@@ -318,6 +319,16 @@ END;
 END;
 
             }
+
+            //Meta processor
+            PageElement::$meta = <<<META
+    <meta content="$name" property="og:title" />
+    <meta content="$description" property="og:description" />
+    <meta content="https://https://emotes.kosmx.dev/e/$emote->id" property="og:url" />
+    <meta content="https://https://emotes.kosmx.dev/e/$emote->id/icon" property="og:image" />
+    <meta name="author" content="$author" />
+META;
+
 
             return new LiteralElement(<<<END
 <div>
