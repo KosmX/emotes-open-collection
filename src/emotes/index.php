@@ -329,6 +329,7 @@ END;
     <meta content="$emote->id" property="og:url" />
     <meta content="$emote->id/icon" property="og:image" />
     <meta name="author" content="$author" />
+    <link type="application/json+oembed" href="https://emotes.kosmx.dev/e/$emote->id/embed.json">
 META;
 
 
