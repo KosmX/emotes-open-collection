@@ -324,8 +324,8 @@ END;
             PageElement::$meta = <<<META
     <meta content="$name" property="og:title" />
     <meta content="$description" property="og:description" />
-    <meta content="https://https://emotes.kosmx.dev/e/$emote->id" property="og:url" />
-    <meta content="https://https://emotes.kosmx.dev/e/$emote->id/icon" property="og:image" />
+    <meta content="https://emotes.kosmx.dev/e/$emote->id" property="og:url" />
+    <meta content="https://emotes.kosmx.dev/e/$emote->id/icon" property="og:image" />
     <meta name="author" content="$author" />
 META;
 
