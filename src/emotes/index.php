@@ -531,8 +531,8 @@ END;
 {
    "author_name": "$emote->name",
    "author_url": "https://emotes.kosmx.dev/e/$emote->id",
-   "provider_name": "Download emote",
-   "provider_url": "https://emotes.kosmx.dev/e/$emote->id/bin"
+   "provider_name": "emotes.kosmx.dev",
+   "provider_url": "https://emotes.kosmx.dev/"
 }
 END;
             return Routes::SELF_SERVED;
