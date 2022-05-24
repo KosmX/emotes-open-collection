@@ -43,6 +43,7 @@ $R = new Router();
 $R->get('~^\\/favicon\\.ico$~')->action(function () {
     return \favicon\serve();
 });
+$R->get('~^\\/robots(\\.txt)?$~')->action(function () {return \favicon\serverRobots();});
 
 $R->all('~^\\/register(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return AccountPage::getPage();});
 $R->all('~^\\/u(ser)?\\/~')->action(function () use (&$current) {

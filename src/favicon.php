@@ -12,3 +12,15 @@ function serve(): Routes
 
     return Routes::SELF_SERVED;
 }
+
+function serverRobots(): Routes
+{
+    header('content-type: text/plain');
+    echo <<<ROBOTS
+User-agent: *
+Disallow: /settings/
+
+ROBOTS;
+
+    return Routes::SELF_SERVED;
+}
