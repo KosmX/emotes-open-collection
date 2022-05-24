@@ -4,6 +4,7 @@ namespace utils;
 use elements\bootstrap\Navbar;
 use elements\bootstrap\navbar\DropdownEntry;
 use elements\bootstrap\navbar\LiteralEntry;
+use elements\bootstrap\navbar\UrlEntry;
 use elements\IElement;
 use elements\LiteralElement;
 use pageUtils\UserHelper;
@@ -38,6 +39,8 @@ function getDefaultHeader(string $current = ''): Navbar {
         $menu->addEntry(new LiteralEntry("Emotes", "emotes"));
         $menu->addEntry(new LiteralEntry("Account", "user"));
     }
+
+    //$menu->addEntry(new UrlEntry("Emotecraft wiki", 'https://emotecraft.kosmx.dev/'));
 
     $menu->setCurrent($current);
 
