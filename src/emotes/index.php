@@ -344,7 +344,7 @@ META;
 <span class="float-start">
 <h1>$name</h1>
 <hr>
-<h3>Original author: $author</h3>
+<h3>Author: $author</h3>
 <h5>$description</h5>
 <br><br>
 owner: <a href="/u/{$r['user']}">{$r['displayName']}</a>
