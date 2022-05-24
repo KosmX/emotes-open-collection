@@ -64,7 +64,8 @@ function getURLParams(): array
 
 function getCurrentPage(): string
 {
-    return rtrim(parse_url($_SERVER['REQUEST_URI'])['path'], '/');
+    $url = parse_url('/'.ltrim($_SERVER['REQUEST_URI'], '/'))['path'];
+    return rtrim($url, '/');
 }
 
 // ['e', '42', 'edit']

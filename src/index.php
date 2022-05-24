@@ -19,6 +19,15 @@ use function notFound\print404;
 
 $current = '';
 
+// -- Some sort of vulnerability mitigation -- //
+
+if (str_starts_with($_SERVER['REQUEST_URI'], '//')) {
+    print404();
+    exit(0);
+}
+
+// -- end section -- //
+
 if (getCurrentPage() != '' && str_ends_with(parse_URL($_SERVER['REQUEST_URI'])['path'], '/')) {
     redirect(getCurrentPage());
     exit(0);
