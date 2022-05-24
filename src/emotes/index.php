@@ -28,6 +28,8 @@ class index
         $R->all('~^\\d+\\/delete(\\/)?$~')->action(function () {return self::delete();});
         $R->all('~^\\d+\\/bin(\\/)?$~')->action(function () {return self::bin();});
         $R->all('~^\\d+\\/json(\\/)?$~')->action(function () {return self::json();});
+        $R->all('~^\\d+\\/embed.json(\\/)?$~')->action(function () {return self::embed();});
+
         $R->all('~^my(\\/)?$~')->action(function () {return self::userEmotes();});
         $R->all('~^tmp(\\/)?$~')->action(function () {return self::unpublishedEmotes();});
         $R->all('~^starred(\\/)?$~')->action(function () {return self::starredEmotes();});
@@ -324,8 +326,8 @@ END;
             PageElement::$meta = <<<META
     <meta content="$name" property="og:title" />
     <meta content="$description" property="og:description" />
-    <meta content="https://emotes.kosmx.dev/e/$emote->id" property="og:url" />
-    <meta content="https://emotes.kosmx.dev/e/$emote->id/icon" property="og:image" />
+    <meta content="$emote->id" property="og:url" />
+    <meta content="$emote->id/icon" property="og:image" />
     <meta name="author" content="$author" />
 META;
 
@@ -510,5 +512,34 @@ END;
 
         $list->addElement(\utils\getPageButtons($count, $p/$pageSize, $pageSize));
         return $list;
+    }
+
+    private static function embed(): Routes
+    {
+        $emote = Emote::get((int)getUrlArray()[1]);
+        if (Emote::canViewEmote($emote)) {
+
+
+            header("content-type: application/json");
+            echo <<<END
+{
+  "title": "$emote->name",
+  "description": "$emote->description",
+  "url": "https://emotes.kosmx.dev/e/$emote->id",
+  "color": 121212,
+  "image": {
+    "url": "https://emotes.kosmx.dev/e/$emote->id/icon"
+  },
+  "author": {
+    "name": "$emote->author",
+    "url": "https://discordapp.com"
+  }
+}
+END;
+            return Routes::SELF_SERVED;
+
+
+        }
+        return Routes::NOT_FOUND;
     }
 }
