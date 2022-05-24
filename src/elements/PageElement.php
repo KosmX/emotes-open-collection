@@ -45,6 +45,9 @@ class PageElement implements IElement
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="$css">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+    
+    <!-- Open Search XML -->
+    <link rel="search" type="application/opensearchdescription+xml" href="/assets/opensearch.xml" title="Emotes">
 </head>
 <body>
 $str

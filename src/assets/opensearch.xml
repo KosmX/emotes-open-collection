@@ -2,7 +2,7 @@
     <ShortName>EOC</ShortName>
     <Description>Search emotes</Description>
     <InputEncoding>UTF-8</InputEncoding>
-    <Image width="16" height="16" type="image/x-icon">https://github.com/favicon.ico</Image>
-    <Url type="text/html" method="get" template="https://emotes.kosmx.dev/search?q={searchTerms}&ref=opensearch"/>
-    <moz:SearchForm>https://emotes.kosmx.dev/search</moz:SearchForm>
+    <Image width="32" height="32" type="image/x-icon">https://github.com/favicon.ico</Image>
+    <Url type="text/html" method="get" template="https://emotes.kosmx.dev/e?s={searchTerms}"/>
+    <moz:SearchForm>https://emotes.kosmx.dev/e</moz:SearchForm>
 </OpenSearchDescription>
