@@ -330,7 +330,7 @@ END;
             PageElement::$meta = <<<META
     <meta content="$name" property="og:title" />
     <meta content="$description" property="og:description" />
-    <meta content="https://emotes.kosmx.dev/$emote->id/icon.png" property="og:image" />
+    <meta content="https://emotes.kosmx.dev/e/$emote->id/icon.png" property="og:image" />
     <meta name="author" content="$author" />
     <meta name="twitter:card" content="summary_large_image">
     <meta name="theme-color" content="#03FCC2">
