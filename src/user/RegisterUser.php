@@ -108,7 +108,7 @@ END
                 getDB()->begin_transaction();
                 $q = getDB()->prepare('UPDATE userAccounts join auths a on a.id = userAccounts.authID SET userAccounts.token = ? where userID = ? && a.name = ?;');
                 $token = $auth->getToken();
-                $q->bind_param('sii', $token, UserHelper::getCurrentUser()->userID, $authName);
+                $q->bind_param('sis', $token, UserHelper::getCurrentUser()->userID, $authName);
                 $q->execute();
                 getDB()->commit();
 
