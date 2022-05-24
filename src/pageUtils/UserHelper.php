@@ -27,7 +27,11 @@ class UserHelper
         2 => array('Quartz', 'https://bootswatch.com/5/quartz/bootstrap.min.css'),
         3 => array('Morph', 'https://bootswatch.com/5/morph/bootstrap.min.css'),
         4 => array('Darkly', 'https://bootswatch.com/5/darkly/bootstrap.min.css'),
-        5 => array('Slate', 'https://bootswatch.com/5/slate/bootstrap.min.css')
+        5 => array('Slate', 'https://bootswatch.com/5/slate/bootstrap.min.css'),
+        6 => array('Cyborg', 'https://bootswatch.com/5/cyborg/bootstrap.min.css'),
+        7 => array('Solar', 'https://bootswatch.com/5/solar/bootstrap.min.css'),
+        8 => array('Superhero', 'https://bootswatch.com/5/superhero/bootstrap.min.css'),
+        9 => array('Vapor', 'https://bootswatch.com/5/vapor/bootstrap.min.css')
     );
 
     private ?string $usernameInvalid = null;
