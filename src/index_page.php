@@ -18,7 +18,7 @@ class index_page
 <hr>
 <br><br>
 <h3>Emotecraft mod</h3>
-<h5 style="margin-bottom: 0"><a href="https://emotecraft.kosmx.dev/>">Emotecraft Wiki</a> </h5>
+<h5 style="margin-bottom: 0"><a href="https://emotecraft.kosmx.dev/">Emotecraft Wiki</a> </h5>
 <small>wiki made by <a href="https://github.com/Kale-Ko">KaleKo</a></small>
 <br>
 <br>
