@@ -128,7 +128,7 @@ class index
             $userButton = "<input type='hidden' name='from' value='$_GET[from]'>";
 
             $list->addElement(new LiteralElement(<<<END
-<form method="get" target="$page">
+<form method="get" action="$page">
 <input type="hidden" name="s" value="$currentSearch">
 <button type="submit" class="btn btn-light"><i class="bi bi-x-lg"></i> from: $user->displayName</button>
 </form>
@@ -198,7 +198,7 @@ END));
             }
         }
         $element->addElement(new LiteralElement(<<<END
-<form method="post" target="/e/new" enctype="multipart/form-data"> <!--File upload needs different form-->
+<form method="post" action="/e/new" enctype="multipart/form-data"> <!--File upload needs different form-->
     <div class="mb-3">
         <label for="file" class="form-label">Upload an emote</label>
         <input type="file" name="emote" class="form-control" id="emote" aria-labelledby="fileUploadHelp" required>
@@ -301,7 +301,7 @@ END;
 
             }
             $editButton .= <<<END
-<form method="post" target="$emote->id"><input type="hidden" name="like" value="1" />$button</form>
+<form method="post" action="$emote->id"><input type="hidden" name="like" value="1" />$button</form>
 END;
 
 
