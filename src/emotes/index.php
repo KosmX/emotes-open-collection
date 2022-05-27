@@ -486,7 +486,7 @@ END;
         return self::userEmotes('published = false');
     }
 
-    private static function starredEmotes(string $filter = 'visibility >= 2 && published = true', int $pageSize = 20): Routes|IElement
+    private static function starredEmotes(string $filter = 'visibility >= 1 && published = true', int $pageSize = 20): Routes|IElement
     {
         if (UserHelper::getCurrentUser() == null) return Routes::NOT_FOUND;
 
