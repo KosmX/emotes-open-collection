@@ -48,7 +48,7 @@ create table if not exists emotes
     emoteOwner  int          not null,
     name        varchar(128) not null,
     description varchar(256) default '',
-    author      varchar(128) null,
+    author      varchar(128) null default '',
     #Emote visibility
     #0 => private 1 => unlisted, 2 => public list, 3 => Emote ZIP
     visibility  int default 0,

@@ -33,7 +33,7 @@ class Emote
         $this->ownerID = $data['ownerID'];
         $this->name = $data['name'];
         $this->description = $data['description'];
-        $this->author = $data['author'];
+        $this->author = $data['author']?? '';
         $this->visibility = $data['visibility'];
         $this->published = $data['published'] != 0;
     }

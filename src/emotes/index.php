@@ -337,6 +337,7 @@ END;
     <link type="application/json+oembed" href="https://emotes.kosmx.dev/e/$emote->id/embed.json">
 META;
 
+            if ($author != '') $author = 'Author: '.$author;
 
             return new LiteralElement(<<<END
 <div>
@@ -344,7 +345,7 @@ META;
 <span class="float-start">
 <h1>$name</h1>
 <hr>
-<h3>Author: $author</h3>
+<h3>$author</h3>
 <h5>$description</h5>
 <br><br>
 owner: <a href="/u/{$r['user']}">{$r['displayName']}</a>
