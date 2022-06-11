@@ -37,6 +37,23 @@ class index_page
 <hr>
 This project is Open Source!<br>
 <a href="https://github.com/KosmX/emotes-open-collection"><i class="bi bi-github"></i></a>
+<hr>
+Running an ad-free web service is not free, if you like my work, feel free to donate me!
+<br>
+<div class="container">
+    <div class="row row-cols-auto">
+        <div class="col">
+        <a href="https://www.patreon.com/bePatron?u=55351945" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+        </div>
+        <div class="col">
+        <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#3ab372', 'G2G6505Y4');kofiwidget2.draw();</script>
+        </div>
+        <div class="col">
+        If possible, use Ko-Fi, it takes less fee.
+        </div>
+    </div>
+</div>
+
 </div>
 END));
 
