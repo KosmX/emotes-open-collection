@@ -45,6 +45,9 @@ $R->get('~^\\/favicon\\.ico$~')->action(function () {
 });
 $R->get('~^\\/robots(\\.txt)?$~')->action(function () {return \favicon\serverRobots();});
 
+$R->get('~^\\/terms$~')->action(function () {return new \elements\LiteralElement(file_get_contents('terms.html'));});
+$R->get('~^\\/privacy$~')->action(function () {return new \elements\LiteralElement(file_get_contents('privacy.html'));});
+
 $R->all('~^\\/register(\\/|$)~')->action(function () use (&$current) {$current = 'user'; return AccountPage::getPage();});
 $R->all('~^\\/u(ser)?\\/~')->action(function () use (&$current) {
     $current = 'user';
