@@ -7,6 +7,7 @@ use elements\IElement;
 use elements\LiteralElement;
 use elements\PageElement;
 use elements\SimpleList;
+use i18n\Translatable;
 use java\EmoteDaemonClient;
 use pageUtils\UserHelper;
 use routing\Method;
@@ -127,10 +128,13 @@ class index
         if (isset($_GET['from']) && ($user = UserHelper::getUserFromID((int)$_GET['from'])) != null) {
             $userButton = "<input type='hidden' name='from' value='$_GET[from]'>";
 
+            $from = Translatable::getTranslated("emotes.from", array("user"=>$user->displayName));
+            $search = Translatable::getTranslated("emotes.search");
+
             $list->addElement(new LiteralElement(<<<END
 <form method="get" action="$page">
 <input type="hidden" name="s" value="$currentSearch">
-<button type="submit" class="btn btn-light"><i class="bi bi-x-lg"></i> from: $user->displayName</button>
+<button type="submit" class="btn btn-light"><i class="bi bi-x-lg"></i> $from</button>
 </form>
 END));
         }
@@ -138,7 +142,7 @@ END));
         $list->addElement(new LiteralElement(<<<END
       <form class="d-flex" method="get" action="$page">
         <input class="form-control me-2" type="search" name="s" placeholder="Search Emote" aria-label="Search" value="$currentSearch">$userButton
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <button class="btn btn-outline-success" type="submit">$search</button>
       </form>
         <hr>
 END));
@@ -197,14 +201,19 @@ END));
                 redirect("/e/$emote->id/edit");
             }
         }
+
+        $upload = Translatable::getTranslated("emotes.upload");
+        $helper = Translatable::getTranslated("emotes.upload.helper");
+        $uploadButton = Translatable::getTranslated("emotes.upload.button");
+
         $element->addElement(new LiteralElement(<<<END
 <form method="post" action="/e/new" enctype="multipart/form-data"> <!--File upload needs different form-->
     <div class="mb-3">
-        <label for="file" class="form-label">Upload an emote</label>
+        <label for="file" class="form-label">$upload</label>
         <input type="file" name="emote" class="form-control" id="emote" aria-labelledby="fileUploadHelp" required>
-        <div id="fileUploadHelp" class="form-text">After uploading you can review the emote before publishing.</div>
+        <div id="fileUploadHelp" class="form-text">$helper</div>
     </div>
-    <button type="submit" class="btn btn-primary">Upload!</button>
+    <button type="submit" class="btn btn-primary">$uploadButton</button>
 </form>
 END
         ));
@@ -262,12 +271,16 @@ END;
 
             $editButton = '';
             if (UserHelper::getCurrentUser() != null && UserHelper::getCurrentUser()->userID == $emote->ownerID) {
+                $Tedit = Translatable::getTranslated("emotes.edit");
+                $Tdelete = Translatable::getTranslated("emotes.delete");
                 $editButton .= <<<END
-<a href="$emote->id/edit" type="button" class="btn btn-primary" style="margin-top: 24px"><i class="bi bi-pencil-square"></i> Edit</a>
-<a href="$emote->id/delete" type="button" class="btn btn-danger" style="margin-top: 24px"><i class="bi bi-trash"></i> Delete</a>
+<a href="$emote->id/edit" type="button" class="btn btn-primary" style="margin-top: 24px"><i class="bi bi-pencil-square"></i> $Tedit</a>
+<a href="$emote->id/delete" type="button" class="btn btn-danger" style="margin-top: 24px"><i class="bi bi-trash"></i> $Tdelete</a>
 END;
             }
-            $button = "<button type='submit' class='btn btn-info' disabled>$likes <i class='bi bi-star'></i> Star</button>";
+            $star = Translatable::getTranslated("emotes.star");
+            $starred = Translatable::getTranslated("emotes.starred");
+            $button = "<button type='submit' class='btn btn-info' disabled>$likes <i class='bi bi-star'></i> $star</button>";
             if (UserHelper::getCurrentUser() != null) {
                 $userID = UserHelper::getCurrentUser()->userID;
                 $q = getDB()->prepare("SELECT COUNT(userID) as 'liked' FROM likes as l join users u on u.id = l.userID where userID = ? && l.emoteID = ?;");
@@ -294,9 +307,9 @@ END;
                 }
 
                 if ($liked) {
-                    $button = "<button type='submit' class='btn btn-warning'>$likes <i class='bi bi-star-fill'></i> Starred</button>";
+                    $button = "<button type='submit' class='btn btn-warning'>$likes <i class='bi bi-star-fill'></i> $starred</button>";
                 } else {
-                    $button = "<button type='submit' class='btn btn-info'>$likes <i class='bi bi-star'></i> Star</button>";
+                    $button = "<button type='submit' class='btn btn-info'>$likes <i class='bi bi-star'></i> $star</button>";
                 }
 
             }
@@ -320,8 +333,9 @@ END;
             $description = htmlspecialchars($emote->description);
             $name = htmlspecialchars($emote->name);
             if (strlen($ri[0]['data']) != 0) {
+                $icon = Translatable::getTranslated("emotes.download.png");
                 $hasIcon = <<<END
-<a href="$emote->id/icon" type="button" class="btn btn-light" style="margin-top: 12px" download="$name.png"><i class="bi bi-download"></i> Download PNG</a>
+<a href="$emote->id/icon" type="button" class="btn btn-light" style="margin-top: 12px" download="$name.png"><i class="bi bi-download"></i> $icon</a>
 END;
 
             }
@@ -338,6 +352,11 @@ END;
 META;
 
             if ($author != '') $author = 'Author: '.$author;
+            $owner = Translatable::getTranslated("emotes.owner", array("user"=>"<a href=\"/u/{$r['user']}\">{$r['displayName']}</a>"));
+            $download = Translatable::getTranslated("emotes.download");
+            $downloadOther = Translatable::getTranslated("emotes.download.other");
+            $downloadNote = Translatable::getTranslated("emotes.download.other.note");
+            $downloadJson = Translatable::getTranslated("emotes.download.json");
 
             return new LiteralElement(<<<END
 <div>
@@ -348,17 +367,17 @@ META;
 <h3>$author</h3>
 <h5>$description</h5>
 <br><br>
-owner: <a href="/u/{$r['user']}">{$r['displayName']}</a>
+$owner
 </span>
 <div class="float-none">
-<a href="$emote->id/bin" type="button" class="btn btn-success" style="margin-top: 24px" download="$name.emotecraft"><i class="bi bi-download"></i> Download</a>
+<a href="$emote->id/bin" type="button" class="btn btn-success" style="margin-top: 24px" download="$name.emotecraft"><i class="bi bi-download"></i> $download</a>
 $editButton
 <hr>
-Download as traditional emote json and icon:
+$downloadOther
 <br>
-<small class="text-muted">You probably don't need this, but who knows</small>
+<small class="text-muted">$downloadNote</small>
 <br>
-<a href="$emote->id/json" type="button" class="btn btn-light" style="margin-top: 12px" download="$name.json"><i class="bi bi-download"></i> Download JSON</a>
+<a href="$emote->id/json" type="button" class="btn btn-light" style="margin-top: 12px" download="$name.json"><i class="bi bi-download"></i> $downloadJson</a>
 $hasIcon
 <br>
 </div>
@@ -375,24 +394,31 @@ END);
         if ($emote !== null && UserHelper::getCurrentUser() !== null && $emote->ownerID === UserHelper::getCurrentUser()->userID) {
             if (Method::POST->isActive() && isset($_POST['deleteEmote'])) {
                 $emote->deleteEmote();
+                $emoteDeleted = Translatable::getTranslated("emotes.delete.success");
                 return new LiteralElement(<<<END
 <div class="alert alert-success" role="alert">
-Emote deleted!
+$emoteDeleted
 </div>
 END);
 
             } else {
                 $list = new SimpleList();
                 $list->addElement($emote->getCard());
+
+                $text = Translatable::getTranslated("emotes.delete.page");
+                $check = Translatable::getTranslated("emotes.delete.check");
+                $note = Translatable::getTranslated("emotes.delete.note");
+                $button = Translatable::getTranslated("emotes.delete.button");
+
                 $list->addElement(new LiteralElement(<<<END
-<h2>Are you sure, you want to delete this emote?</h2>
+<h2>$text</h2>
 <form method="post" action="delete">
   <div class="mb-3 form-check">
     <input name="deleteEmote" type="checkbox" class="form-check-input" id="exampleCheck1" aria-describedby="exampleCheckHelp" required>
-    <label class="form-check-label" for="exampleCheck1">I really want to delete this emote</label>
-    <div id="exampleCheckHelp" class="form-text">By deleting this emote, the UUID will be freed, you may re-upload it</div>
+    <label class="form-check-label" for="exampleCheck1">$check</label>
+    <div id="exampleCheckHelp" class="form-text">$note</div>
   </div>
-  <button type="submit" class="btn btn-danger">Delete emote</button>
+  <button type="submit" class="btn btn-danger">$button</button>
 </form>
 END
 ));
