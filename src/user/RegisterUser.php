@@ -8,6 +8,7 @@ use elements\AlertTag;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
+use i18n\Translatable;
 use JetBrains\PhpStorm\ArrayShape;
 use pageUtils\UserHelper;
 use routing\Router;
@@ -84,10 +85,7 @@ class RegisterUser
             //state mismatch, timeout or third-party
             http_response_code(498); //Note somehow the mismatched token
             $listElement = new SimpleList();
-            $listElement->addElement(new AlertTag(new LiteralElement(<<<END
-Mismatched oauth state, probably you waited for too long, please try again
-END
-            )));
+            $listElement->addElement(new AlertTag(new Translatable("oauth_mismatch")));
             return $this->welcomeNewPeople($listElement);
         }
         if ($ret === true) {
@@ -135,17 +133,9 @@ END
     {
         #$listElement = new SimpleList();
         $hstack = new HOrdered();
-        $listElement->addElement(new LiteralElement(<<<END
-<h1>You are not logged in, please log in!</h1>
-END
-));
+        $listElement->addElement(new Translatable("not_logged_in"));
 
-        $hstack->addElement(new LiteralElement(<<<END
-<h4>Please select one method to log-in!</h4>
-To register, first log-in with an account,<br>and follow the form.
-END
-
-));
+        $hstack->addElement(new Translatable("select_method"));
 
         $hstack->addElement($this->gitHubAuth->getAuthButton(), 5);
 
@@ -168,10 +158,7 @@ END
     {
         $content = new SimpleList();
 
-        $content->addElement(new LiteralElement(<<<END
-<h1>Register</h1>
-<h4>Please verify/check the form below, and press <bold>register</bold> to finish your account</h4>
-END));
+        $content->addElement(new Translatable("check_form"));
 
         $form = $this->userData['user']->getForm('/register', 'Register');
 
