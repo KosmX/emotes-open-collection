@@ -1,9 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace elements\bootstrap;
+namespace pageUtils;
 
+use elements\bootstrap\Button;
 use elements\bootstrap\navbar\IEntry;
+use elements\bootstrap\navbar\LiteralEntry;
 use elements\IElement;
+use elements\LiteralElement;
 use i18n\Translatable;
 
 class Navbar implements IElement
@@ -32,6 +35,10 @@ class Navbar implements IElement
         }
         $search = Translatable::getTranslated('nav.search.button');
         $searchPlaceholder = Translatable::getTranslated('nav.search');
+
+        $langEntry = new Button('/lang', new LiteralElement('<i class="bi bi-globe"></i>'), 'info');
+        $langEntry = $langEntry->build();
+
         return <<<END
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
@@ -50,6 +57,9 @@ class Navbar implements IElement
         <input class="form-control me-2" type="search" name="s" placeholder="$searchPlaceholder" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">$search</button>
       </form>
+      <span style="margin: 10px">
+      $langEntry
+      </span>
     </div>
   </div>
 </nav>

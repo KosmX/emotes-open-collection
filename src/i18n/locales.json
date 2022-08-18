@@ -1,0 +1,191 @@
+{
+  "af-ZA": [
+    "Afrikaans",
+    "Afrikaans"
+  ],
+  "ar_SA": [
+    "العربية",
+    "Arabic"
+  ],
+  "bg-BG": [
+    "Български",
+    "Bulgarian"
+  ],
+  "ca-ES": [
+    "Català",
+    "Catalan"
+  ],
+  "zh-CN": [
+    "中文 (中国大陆)",
+    "Chinese (PRC)"
+  ],
+  "zh-TW": [
+    "中文 (台灣)",
+    "Chinese (Taiwan)"
+  ],
+  "hr-HR": [
+    "Hrvatski",
+    "Croatian"
+  ],
+  "cs-CZ": [
+    "Čeština",
+    "Czech"
+  ],
+  "da-DK": [
+    "Dansk",
+    "Danish"
+  ],
+  "nl-NL": [
+    "Nederlands",
+    "Dutch"
+  ],
+  "el-GR": [
+    "Ελληνικά",
+    "Greek"
+  ],
+  "en_PT": [
+    "Yarrr",
+    "Pirate Speak"
+  ],
+  "en_UD": [
+    "ɥsᴉlƃuƎ",
+    "Upside Down"
+  ],
+  "en-US": [
+    "English",
+    "English"
+  ],
+  "et-EE": [
+    "Eesti keel",
+    "Estonian"
+  ],
+  "fi-FI": [
+    "Suomi",
+    "Finnish"
+  ],
+  "fr-FR": [
+    "Français",
+    "French"
+  ],
+  "de-DE": [
+    "Deutsch",
+    "German"
+  ],
+  "he-IL": [
+    "עברית",
+    "Hebrew"
+  ],
+  "hi-IN": [
+    "हिंदी",
+    "Hindi"
+  ],
+  "hu-HU": [
+    "Magyar",
+    "Hungarian"
+  ],
+  "id-ID": [
+    "Bahasa Indonesia",
+    "Indonesian"
+  ],
+  "it-IT": [
+    "Italiano",
+    "Italian"
+  ],
+  "ja-JP": [
+    "日本語",
+    "Japanese"
+  ],
+  "km-KH": [
+    "ភាសាខ្មែរ",
+    "Khmer"
+  ],
+  "ko-KR": [
+    "한국어",
+    "Korean"
+  ],
+  "la-LA": [
+    "Latina",
+    "Latin"
+  ],
+  "lv-LV": [
+    "Latviešu",
+    "Latvian"
+  ],
+  "lt-LT": [
+    "Lietuvių kalba",
+    "Lithuanian"
+  ],
+  "lol-US": [
+    "Meow?",
+    "Lolcat"
+  ],
+  "mn-MN": [
+    "Монгол",
+    "Mongolian"
+  ],
+  
+  "no-NO": [
+    "Norsk",
+    "Norwegian"
+  ],
+  "fa-IR": [
+    "فارسی",
+    "Persian"
+  ],
+  "pl-PL": [
+    "Polski",
+    "Polish"
+  ],
+  "pt-BR": [
+    "Português (Brasil)",
+    "Portuguese (Brazil)"
+  ],
+  "pt-PT": [
+    "Português (Portugal)",
+    "Portuguese (Portugal)"
+  ],
+  "ro-RO": [
+    "Română",
+    "Romanian"
+  ],
+  "ru-RU": [
+    "Русский",
+    "Russian"
+  ],
+  "sr-SP": [
+    "Српски / Srpski",
+    "Serbian"
+  ],
+  "sk-SK": [
+    "Slovenčina",
+    "Slovak"
+  ],
+  "sl-SI": [
+    "Slovenščina",
+    "Slovenian"
+  ],
+  "es-ES": [
+    "Español",
+    "Spanish"
+  ],
+  "sv-SE": [
+    "Svenska",
+    "Swedish"
+  ],
+  "th-TH": [
+    "ไทย",
+    "Thai"
+  ],
+  "tr-TR": [
+    "Türkçe",
+    "Turkish"
+  ],
+  "uk-UA": [
+    "Українська",
+    "Ukrainian"
+  ],
+  "vi-VN": [
+    "Tiếng Việt",
+    "Vietnamese"
+  ]
+}

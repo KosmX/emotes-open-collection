@@ -10,6 +10,7 @@ class Translatable implements IElement
 
     private array $vars;
     private static ?array $strings = null;
+    private static ?array $translations = null;
 
     /**
      * @param string $translationKey
@@ -44,17 +45,32 @@ class Translatable implements IElement
     private static function getStrings(): array {
         if (Translatable::$strings == null) {
             $translation = self::getLanguage();
-            $file = file_get_contents("i18n/lang/$translation.json");
+            $file = file_get_contents("i18n/lang/en_US.json");
             Translatable::$strings = json_decode($file, true);
+            if ($translation != 'en_US') { //To fill empty :D
+                $file = file_get_contents("i18n/lang/$translation.json");
+                Translatable::$strings = array_merge(Translatable::$strings, json_decode($file, true));
+            }
             //var_dump(Translatable::$strings);
         }
         return Translatable::$strings;
     }
 
-    private static function getLanguage(): string {
+    public static function getLanguage(): string {
         if (isset($_COOKIE["language"])) {
-            return "en_US"; //TODO
+            $lang = $_COOKIE['language'];
+            if (array_key_exists(str_replace('_', '-', $lang), self::getTranslations())) {
+                return $lang;
+            }
         }
         return "en_US";
+    }
+
+    public static function getTranslations(): array {
+        if (Translatable::$translations == null) {
+            $file = file_get_contents('i18n/locales.json');
+            Translatable::$translations = json_decode($file, true);
+        }
+        return Translatable::$translations;
     }
 }
