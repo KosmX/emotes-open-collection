@@ -5,6 +5,7 @@ namespace pageUtils;
 # Only do 1 query per user request, and keep the important info available
 use elements\IElement;
 use elements\LiteralElement;
+use i18n\Translatable;
 use user\auth\GitHub;
 use user\RegisterUser;
 
@@ -117,7 +118,7 @@ FORM);
             $res = $lockAndCheckUname->get_result();
 
             if ($res->num_rows != 0) {
-                $this->usernameInvalid = 'The username is already taken, please choose another one';
+                $this->usernameInvalid = Translatable::getTranslated("username_taken");
                 getDB()->rollback(); //We did nothing, close the transaction
                 return false;
             } else {
@@ -147,7 +148,7 @@ FORM);
                 $lockAndCheckUname->execute();
                 $res = $lockAndCheckUname->get_result();
                 if ($res->num_rows != 0) {
-                    $this->usernameInvalid = 'The username is already taken, please choose another one';
+                    $this->usernameInvalid = Translatable::getTranslated("username_taken");
                     getDB()->rollback(); //We did nothing, close the transaction
                     return false;
                 } else {
@@ -209,7 +210,7 @@ FORM);
             $this->email = htmlspecialchars($_POST['email']);
 
             if ($this->uname == '') {
-                $this->usernameInvalid = "Please specify a username!";
+                $this->usernameInvalid = Translatable::getTranslated("username_not_defined");
                 return false;
             }
 
@@ -222,7 +223,7 @@ FORM);
 
             if (preg_match('~^[a-zA-Z\\d]+$~', $this->uname) == 0) {
                 //$this->usernameInvalid = 'Username is verified on the server. good try!'; //The standard form does not allow invalid usernames, whoever finds it, they must have done the post manually.
-                $this->usernameInvalid = "Please choose a valid username, only contains letters and numbers";
+                $this->usernameInvalid = Translatable::getTranslated("username_invalid");
                 return false;
             }
 

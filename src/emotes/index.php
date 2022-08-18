@@ -165,17 +165,17 @@ END));
                 if (Method::POST->isActive()) {
                     $r = $emote->processEdit();
                     if ($r === true) {
-                        $list->addElement(new AlertTag(new LiteralElement("Saved"), 'alert-success'));
+                        $list->addElement(new AlertTag(new Translatable("saved"), 'alert-success'));
                     }
                     else if (is_string($r)) {
                         $list->addElement(new AlertTag(new LiteralElement($r)));
                     }
                     else {
-                        $list->addElement(new AlertTag(new LiteralElement("Unknown error, please check your input and try again!")));
+                        $list->addElement(new AlertTag(new Translatable("unknown_error")));
                     }
                 }
 
-                $t = $emote->published ? "Save" : "Publish!";
+                $t = $emote->published ? Translatable::getTranslated("save") : Translatable::getTranslated("publish");
                 $list->addElement($emote->getEdit("edit", $t));
                 return $list;
             }
@@ -192,11 +192,11 @@ END));
             try {
                 $emote = Emote::addEmote($_FILES['emote']);
             } catch (\mysqli_sql_exception $e) {
-                $element->addElement(new AlertTag(new LiteralElement("Emote with this UUID already exists.")));
+                $element->addElement(new AlertTag(new Translatable("UUID_exists")));
                 $emote = null;
             }
             if ($emote === null) {
-                $element->addElement(new AlertTag(new LiteralElement("Emote upload failed, please check your file before re-uploading")));
+                $element->addElement(new AlertTag(new Translatable("upload_failed")));
             } else {
                 redirect("/e/$emote->id/edit");
             }
