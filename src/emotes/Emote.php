@@ -4,6 +4,7 @@ namespace emotes;
 
 use elements\IElement;
 use elements\LiteralElement;
+use i18n\Translatable;
 use java\EmoteDaemonClient;
 use JetBrains\PhpStorm\ArrayShape;
 use pageUtils\UserHelper;
@@ -88,13 +89,14 @@ class Emote
         $title = htmlspecialchars($this->name);
         $desc = htmlspecialchars($this->description);
         $author = htmlspecialchars($this->author);
+        $Tpublist = Translatable::getTranslated("emote.publish");
 
         $button = <<<END
 <a href="/e/$this->id/bin" class="btn btn-success" download="$title.emotecraft"><i class="bi bi-download"></i></a>
 END;
         if (!$this->published) {
             $button = <<<END
-<a href="/e/$this->id/edit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Publish</a>
+<a href="/e/$this->id/edit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> $Tpublist</a>
 END;
 
         }
@@ -138,27 +140,32 @@ END);
         $options .= self::option(2, "Public", $this->visibility);
         $options .= self::option(3, "Public & include in public ZIP", $this->visibility);
 
+        $editIcon = Translatable::getTranslated("emotes.edit.icon");
+        $editName = Translatable::getTranslated("emotes.edit.name");
+        $editDesc = Translatable::getTranslated("emotes.edit.description");
+        $editAuth = Translatable::getTranslated("emotes.edit.author");
+        $editVisi = Translatable::getTranslated("emotes.edit.visibility");
 
         return new LiteralElement(<<<END
 <form method="post" id="editform" action="$callback" enctype="multipart/form-data">
   <div class="mb-3">
-    <label for="icon" class="form-label">Emote icon:</label>
+    <label for="icon" class="form-label">$editIcon</label>
     <input type="file" class="form-control" name="icon" id="icon" aria-describedby="iconHelp">
   </div>
   <div class="mb-3">
-    <label for="name" class="form-label">Emote name:</label>
+    <label for="name" class="form-label">$editName</label>
     <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelp" value="$this->name" required>
   </div>
   <div class="mb-3">
-    <label for="description" class="form-label">Description:</label>
+    <label for="description" class="form-label">$editDesc</label>
     <input type="text" class="form-control" name="description" id="description" value="$this->description">
   </div>
   <div class="mb-3">
-    <label for="author" class="form-label">Author:</label>
+    <label for="author" class="form-label">$editAuth</label>
     <input type="text" class="form-control" name="author" id="author" value="$this->author">
   </div>
   <div class="mb-3">
-    <label for="visibility" class="form-label">Emote visibility</label>
+    <label for="visibility" class="form-label">$editVisi</label>
     <select name="visibility" class="form-select" form="editform" aria-label="Select visibility">
     $options
     </select>

@@ -7,6 +7,7 @@ use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
 use emotes\Emote;
+use i18n\Translatable;
 use pageUtils\UserHelper;
 use routing\Method;
 use routing\Router;
@@ -19,6 +20,8 @@ class AccountPage
 {
     static function getPage(): ?object
     {
+        $cookieTest = \Cookies::testCookies();
+        if ($cookieTest != null) return $cookieTest;
         $R = new Router(1);
 
         $R->all(Router::$EMPTY)->action(function () {return self::userOverview();});
@@ -89,20 +92,15 @@ class AccountPage
         $q->execute();
         $r = $q->get_result()->fetch_array();
 
-        $buttonText = $user->displayName;
-        $lastChar = substr($user->displayName, -1);
-        if ($lastChar == 's' || $lastChar == 'S') {
-            $buttonText .= '\' '; //The names last char is s, we use 's differently
-        } else {
-            $buttonText .= '\'s ';
-        }
-        $buttonText .= "emotes ($r[emotes])";
+        $buttonText = Translatable::getTranslated("user.emotes", array("count"=>$r["emotes"]));
+        //Emotes ({$count})
+        $starred = Translatable::getTranslated("user.starred", array("count"=>$r["likes"]));
 
         $elements->addElement(new LiteralElement(<<<END
 <h1>$user->displayName</h1>
 <h5>$emailField</h5>
 <br>
-<i class="bi bi-star-fill"></i> Starred: $r[likes]
+<i class="bi bi-star-fill"></i> $starred
 <hr>
 <form method="get" action="/e">
 <input type="hidden" name="from" value="$user->userID">
@@ -121,7 +119,7 @@ END
             return Routes::NOT_FOUND;
         } else {
             UserHelper::logout();
-            return new LiteralElement("<h2>Goodbye!</h2>");
+            return new Translatable("logout_goodbye");
         }
     }
 
@@ -135,17 +133,17 @@ END
         $elements = new SimpleList();
         if (Method::POST->isActive()) {
             if($user->updateProfile()) {
-                $elements->addElement( new AlertTag(new LiteralElement("Successfully saved"), 'alert-success'));
+                $elements->addElement( new AlertTag(new Translatable("successful_save"), 'alert-success'));
             }
         }
 
 
-        $elements->addElement(new LiteralElement("<h1>Edit profile</h1>"));
+        $elements->addElement(new Translatable("edit_profile"));
         $elements->addElement($user->getForm('/settings/profile'));
 
         $elements->addElement(new LiteralElement("<hr>"));
 
-        $elements->addElement(new Button('/settings/delete', new LiteralElement("Delete user"), 'danger'));
+        $elements->addElement(new Button('/settings/delete', new Translatable("user_delete"), 'danger'));
 
         #$_SESSION['profEdit'] = serialize($user);
 
@@ -163,16 +161,19 @@ END
             return \index_page::getIndex();
 
         }
+        $checkboxName = Translatable::getTranslated("delete_account_checkbox");
+        $checkboxDescription = Translatable::getTranslated("delete_account.description");
+        $deleteButton = Translatable::getTranslated("delete_account.button");
 
         $elements->addElement(new LiteralElement(<<<END
 
 <form method="post" action="/settings/delete">
   <div class="mb-3 form-check">
     <input name="checkbox" type="checkbox" class="form-check-input" id="exampleCheck1" aria-describedby="exampleCheckHelp" required>
-    <label class="form-check-label" for="exampleCheck1">I want to delete my account</label>
-    <div id="exampleCheckHelp" class="form-text">By deleting your account, every information will be permanently removed.</div>
+    <label class="form-check-label" for="exampleCheck1">$checkboxName</label>
+    <div id="exampleCheckHelp" class="form-text">$checkboxDescription</div>
   </div>
-  <button type="submit" class="btn btn-danger">Delete my account</button>
+  <button type="submit" class="btn btn-danger">$deleteButton</button>
 </form>
 END));
 
@@ -197,7 +198,7 @@ END));
                     getDB()->commit();
 
                 } else {
-                    $list->addElement(new AlertTag(new LiteralElement("Selected theme is invalid")));
+                    $list->addElement(new AlertTag(new Translatable("invalid_selected_theme")));
                 }
 
             }
@@ -208,6 +209,7 @@ END));
                 $i++;
             }
 
+            $selectButton = Translatable::getTranslated("theme_button");
 
             $list->addElement(new LiteralElement(<<<END
 <form action="themes" method="post">
@@ -215,7 +217,7 @@ END));
     $options
 </select>
 <hr>
-<button type="submit" class="btn btn-success">Select theme!</button>
+<button type="submit" class="btn btn-success">$selectButton</button>
 </form>
 END
 ));
