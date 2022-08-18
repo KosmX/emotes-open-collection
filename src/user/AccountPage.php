@@ -19,6 +19,8 @@ class AccountPage
 {
     static function getPage(): ?object
     {
+        $cookieTest = \Cookies::testCookies();
+        if ($cookieTest != null) return $cookieTest;
         $R = new Router(1);
 
         $R->all(Router::$EMPTY)->action(function () {return self::userOverview();});

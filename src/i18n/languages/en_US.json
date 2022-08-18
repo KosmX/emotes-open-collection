@@ -1,0 +1,10 @@
+{
+  "accept_cookies": "Accept Cookies",
+  "asd": "xyz",
+  "cookies": "<h1>Cookies</h1><br><h2>To use this feature, you must first accept cookies</h2>{$privacy}<br>There are no third-party cookies, only essential.<hr><h3>Do you wish to accept Cookies?</h3>",
+  "deny_cookies": "Don't accept Cookies",
+  "go_back": "Go back",
+  "index": "<h1>Welcome to Emotes Open Collection!</h1>\n<hr>\n<h3>Use the navbar to search, or log-in to upload your own emotes!</h3>\n<small>The animations are working on every minecraft version with the latest mod.</small>\n<hr>\n<br><br>\n<h3>Emotecraft mod</h3>\n<h5 style=\"margin-bottom: 0\"><a href=\"https://emotecraft.kosmx.dev/\">Emotecraft Wiki</a> </h5>\n<small>wiki made by <a href=\"https://github.com/Kale-Ko\">KaleKo</a></small>\n<br>\n<br>\n<h5><b>Download the mod:</b></h5>\n<ul>\n<li>CurseForge:\n    <ul>\n    <li><a href=\"https://www.curseforge.com/minecraft/mc-mods/emotecraft\">for Fabric</a></li>\n    <li><a href=\"https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge/\">for Forge</a></li>\n    </ul>\n</li>\n<li><a href=\"https://modrinth.com/mod/emotecraft\">Modrinth</a></>\n<li><a href=\"https://github.com/KosmX/emotes/releases\">GitHub</a></>\n</ul>\n<br><br>\n<hr>\nThis project is Open Source!<br>\n<a href=\"https://github.com/KosmX/emotes-open-collection\"><i class=\"bi bi-github\"></i></a>\n<hr>\nRunning an ad-free web service is not free, if you like my work, feel free to donate me!\n<br>\n<div class=\"container\">\n    <div class=\"row row-cols-auto\">\n {$support}\n        <div class=\"col\">\n        If possible, use Ko-Fi, it takes less fee.\n        </div>\n    </div>\n</div>\n",
+  "no": "no",
+  "yes": "yes"
+}

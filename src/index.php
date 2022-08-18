@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
-session_name('EOCSession');
-session_start();
+if (isset($_COOKIE['enable_cookies'])) {
+    session_name('EOCSession');
+    session_start();
+}
 
 include 'core.php';
 include 'Autoloader.php';
