@@ -47,6 +47,7 @@ function formSubmission() {
 <div>
 <span class="">
 <button type="button" class="btn btn-primary text-center" onclick="formSubmission()">Confirm</button>
+ &nbsp;&nbsp;&nbsp; <a href="https://crowdin.com/project/emotes-open-collection">Help translate on Crowdin!</a>
 </span>
 <hr>
 <form id="selector" name="selector">
