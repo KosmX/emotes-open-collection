@@ -44,7 +44,7 @@ class Translatable implements IElement
     private static function getStrings(): array {
         if (Translatable::$strings == null) {
             $translation = self::getLanguage();
-            $file = file_get_contents("i18n/languages/$translation.json");
+            $file = file_get_contents("i18n/lang/$translation.json");
             Translatable::$strings = json_decode($file, true);
             //var_dump(Translatable::$strings);
         }
