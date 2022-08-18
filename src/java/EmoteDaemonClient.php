@@ -15,7 +15,7 @@ class EmoteDaemonClient
     {
         $this->sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
-        $address = gethostbyname('java');
+        $address = gethostbyname('java'); //Use host.docker.internal for debugging
 
         socket_connect($this->sock,$address, 3000);
 

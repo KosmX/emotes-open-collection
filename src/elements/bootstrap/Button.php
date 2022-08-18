@@ -13,6 +13,7 @@ class Button implements \elements\IElement
     /**
      * @param string $url
      * @param IElement $element
+     * @param string $type
      */
     public function __construct(string $url, IElement $element, string $type = "primary")
     {

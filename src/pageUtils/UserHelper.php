@@ -22,7 +22,7 @@ class UserHelper
     public int $theme;
 
     public static array $themes = array(
-        0 => array('Default', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css'),
+        0 => array('Default', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css'),
         1 => array('Sketchy', 'https://bootswatch.com/5/sketchy/bootstrap.min.css'),
         2 => array('Quartz', 'https://bootswatch.com/5/quartz/bootstrap.min.css'),
         3 => array('Morph', 'https://bootswatch.com/5/morph/bootstrap.min.css'),
