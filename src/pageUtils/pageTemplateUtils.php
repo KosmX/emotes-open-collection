@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 namespace utils;
 
-use elements\bootstrap\Navbar;
 use elements\bootstrap\navbar\DropdownEntry;
 use elements\bootstrap\navbar\LiteralEntry;
-use elements\bootstrap\navbar\UrlEntry;
 use elements\IElement;
 use elements\LiteralElement;
 use i18n\Translatable;
+use pageUtils\Navbar;
 use pageUtils\UserHelper;
 
 function getDefaultHeader(string $current = ''): Navbar {
