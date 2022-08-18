@@ -4,6 +4,7 @@ namespace elements\bootstrap;
 
 use elements\bootstrap\navbar\IEntry;
 use elements\IElement;
+use i18n\Translatable;
 
 class Navbar implements IElement
 {
@@ -29,6 +30,8 @@ class Navbar implements IElement
         foreach ($this->entries as $entry) {
             $str .= $entry->toStr();
         }
+        $search = Translatable::getTranslated('nav.search.button');
+        $searchPlaceholder = Translatable::getTranslated('nav.search');
         return <<<END
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
@@ -44,8 +47,8 @@ class Navbar implements IElement
       $str
       </ul>
       <form class="d-flex" method="get" action="/e">
-        <input class="form-control me-2" type="search" name="s" placeholder="Search Emote" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <input class="form-control me-2" type="search" name="s" placeholder="$searchPlaceholder" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">$search</button>
       </form>
     </div>
   </div>

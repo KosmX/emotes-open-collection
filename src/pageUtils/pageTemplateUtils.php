@@ -7,37 +7,38 @@ use elements\bootstrap\navbar\LiteralEntry;
 use elements\bootstrap\navbar\UrlEntry;
 use elements\IElement;
 use elements\LiteralElement;
+use i18n\Translatable;
 use pageUtils\UserHelper;
 
 function getDefaultHeader(string $current = ''): Navbar {
     $menu = new Navbar();
 
     if (UserHelper::getCurrentUser() != null) {
-        $emotesEntry = new DropdownEntry('Emotes', 'emotes');
+        $emotesEntry = new DropdownEntry(Translatable::getTranslated("nav.emotes"), 'emotes');
 
-        $emotesEntry->addEntry('/e', 'Emotes');
-        $emotesEntry->addEntry('/e/starred', '<i class="bi bi-star-fill"></i> Starred emotes');
+        $emotesEntry->addEntry('/e', Translatable::getTranslated("nav.emotes"));
+        $emotesEntry->addEntry('/e/starred', '<i class="bi bi-star-fill"></i> '.Translatable::getTranslated("nav.emotes.starred"));
         $emotesEntry->addSeparator();
-        $emotesEntry->addEntry('/e/new', '<i class="bi bi-upload"></i> Upload emote');
-        $emotesEntry->addEntry('/e/my', 'My emotes');
-        $emotesEntry->addEntry('/e/tmp', 'Unpublished emotes');
+        $emotesEntry->addEntry('/e/new', '<i class="bi bi-upload"></i> '.Translatable::getTranslated("nav.emotes.new"));
+        $emotesEntry->addEntry('/e/my', Translatable::getTranslated("nav.emotes.my"));
+        $emotesEntry->addEntry('/e/tmp', Translatable::getTranslated('nav.emotes.tmp'));
 
         $menu->addEntry($emotesEntry);
 
 
         $userEntry = new DropdownEntry(UserHelper::getCurrentUser()->displayName, 'user');
 
-        $userEntry->addEntry('/u', 'User page');
-        $userEntry->addEntry('/settings/profile', 'Profile settings');
+        $userEntry->addEntry('/u', Translatable::getTranslated('nav.user.u'));
+        $userEntry->addEntry('/settings/profile', Translatable::getTranslated('nav.user.settings'));
         $userEntry->addSeparator();
-        $userEntry->addEntry('/themes', 'Themes');
+        $userEntry->addEntry('/themes', Translatable::getTranslated('nav.user.themes'));
         $userEntry->addSeparator();
-        $userEntry->addEntry('/logout', 'Log out');
+        $userEntry->addEntry('/logout', Translatable::getTranslated('nav.user.logout'));
 
         $menu->addEntry($userEntry);
     } else {
-        $menu->addEntry(new LiteralEntry("Emotes", "emotes"));
-        $menu->addEntry(new LiteralEntry("Account", "user"));
+        $menu->addEntry(new LiteralEntry(Translatable::getTranslated('nav.emotes'), "emotes"));
+        $menu->addEntry(new LiteralEntry(Translatable::getTranslated('nav.user'), "user"));
     }
 
     //$menu->addEntry(new UrlEntry("Emotecraft wiki", 'https://emotecraft.kosmx.dev/'));

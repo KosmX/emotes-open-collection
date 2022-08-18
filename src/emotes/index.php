@@ -129,7 +129,6 @@ class index
             $userButton = "<input type='hidden' name='from' value='$_GET[from]'>";
 
             $from = Translatable::getTranslated("emotes.from", array("user"=>$user->displayName));
-            $search = Translatable::getTranslated("emotes.search");
 
             $list->addElement(new LiteralElement(<<<END
 <form method="get" action="$page">
@@ -138,10 +137,12 @@ class index
 </form>
 END));
         }
+        $search = Translatable::getTranslated("emotes.search");
+        $searchPlaceholder = Translatable::getTranslated("emotes.search.text");
 
         $list->addElement(new LiteralElement(<<<END
       <form class="d-flex" method="get" action="$page">
-        <input class="form-control me-2" type="search" name="s" placeholder="Search Emote" aria-label="Search" value="$currentSearch">$userButton
+        <input class="form-control me-2" type="search" name="s" placeholder="$searchPlaceholder" aria-label="Search" value="$currentSearch">$userButton
         <button class="btn btn-outline-success" type="submit">$search</button>
       </form>
         <hr>
@@ -271,11 +272,11 @@ END;
 
             $editButton = '';
             if (UserHelper::getCurrentUser() != null && UserHelper::getCurrentUser()->userID == $emote->ownerID) {
-                $Tedit = Translatable::getTranslated("emotes.edit");
-                $Tdelete = Translatable::getTranslated("emotes.delete");
+                $edit = Translatable::getTranslated("emotes.edit");
+                $delete = Translatable::getTranslated("emotes.delete");
                 $editButton .= <<<END
-<a href="$emote->id/edit" type="button" class="btn btn-primary" style="margin-top: 24px"><i class="bi bi-pencil-square"></i> $Tedit</a>
-<a href="$emote->id/delete" type="button" class="btn btn-danger" style="margin-top: 24px"><i class="bi bi-trash"></i> $Tdelete</a>
+<a href="$emote->id/edit" type="button" class="btn btn-primary" style="margin-top: 24px"><i class="bi bi-pencil-square"></i> $edit</a>
+<a href="$emote->id/delete" type="button" class="btn btn-danger" style="margin-top: 24px"><i class="bi bi-trash"></i> $delete</a>
 END;
             }
             $star = Translatable::getTranslated("emotes.star");
@@ -351,7 +352,7 @@ END;
     <link type="application/json+oembed" href="https://emotes.kosmx.dev/e/$emote->id/embed.json">
 META;
 
-            if ($author != '') $author = 'Author: '.$author;
+            if ($author != '') $author = Translatable::getTranslated("emotes.author", array("author"=>$author));
             $owner = Translatable::getTranslated("emotes.owner", array("user"=>"<a href=\"/u/{$r['user']}\">{$r['displayName']}</a>"));
             $download = Translatable::getTranslated("emotes.download");
             $downloadOther = Translatable::getTranslated("emotes.download.other");

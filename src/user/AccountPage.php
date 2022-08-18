@@ -92,14 +92,8 @@ class AccountPage
         $q->execute();
         $r = $q->get_result()->fetch_array();
 
-        $buttonText = $user->displayName;
-        $lastChar = substr($user->displayName, -1);
-        if ($lastChar == 's' || $lastChar == 'S') {
-            $buttonText .= '\' '; //The names last char is s, we use 's differently
-        } else {
-            $buttonText .= '\'s ';
-        }
-        $buttonText .= "emotes ($r[emotes])";
+        $buttonText = Translatable::getTranslated("user.emotes", array("count"=>$r["emotes"]));
+        //Emotes ({$count})
         $starred = Translatable::getTranslated("user.starred", array("count"=>$r["likes"]));
 
         $elements->addElement(new LiteralElement(<<<END

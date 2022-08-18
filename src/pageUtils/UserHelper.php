@@ -58,7 +58,7 @@ class UserHelper
     }
 
 
-    public function getForm(string $target = '/u/edit', string $submitTitle = 'Save'): IElement {
+    public function getForm(string $target = '/u/edit', ?string $submitTitle = null): IElement {
 
         $emailBox = self::checked($this->publicEmail);
         $checkbox = self::checked($this->theCheckbox);
@@ -69,35 +69,47 @@ class UserHelper
             $unameFeedback = self::invalidFeedback('usernameHelp', $this->usernameInvalid);
         }
 
+        $userName = Translatable::getTranslated("user.edit.name");
+        $userNameHint = Translatable::getTranslated("user.edit.name.hint");
+        $displayName = Translatable::getTranslated("user.edit.display");
+        $displayNameHint = Translatable::getTranslated("user.edit.display.hint");
+        $email = Translatable::getTranslated("user.edit.email");
+        $emailHint = Translatable::getTranslated("user.edit.email.hint");
+        $emailPublic = Translatable::getTranslated("user.edit.email.public");
+        $checkboxText = Translatable::getTranslated("user.edit.checkbox");
+        $checkboxHint = Translatable::getTranslated("user.edit.checkbox.hint");
+        $save = Translatable::getTranslated("save");
+        if ($submitTitle == null) $submitTitle = $save;
+
         return new LiteralElement(<<<FORM
 <form method="post" action="$target">
-    <label for="username" class="form-label">User name</label>
+    <label for="username" class="form-label">$userName</label>
   <div class="mb-3 input-group">
     <span class="input-group-text" id="basic-addon1">@</span>
     <input name="username" type="text" class="form-control$unameValid" id="username" aria-describedby="userHelp basic-addon1" value="$this->uname" pattern="^[a-zA-Z0-9]+$" maxlength="128" minlength="3">
     $unameFeedback
   </div>
-  <div class="form-text" id="userHelp">It will be your user URL. For example: emotes.kosmx.dev/u/kosmx<br>It must be unique.</div>
+  <div class="form-text" id="userHelp">$userNameHint</div>
   
   <div class="mb-3">
-    <label for="displayname" class="form-label">Display name</label>
+    <label for="displayname" class="form-label">$displayName</label>
     <input name="displayname" type="text" class="form-control" id="displayname" aria-describedby="displaynameHelp" value="$this->displayName" maxlength="128" minlength="1">
-    <div id="displaynameHelp" class="form-text">Fancy display name, does support unicode 😉</div>
+    <div id="displaynameHelp" class="form-text">$displayNameHint</div>
   </div>
   <hr>
   <div class="mb-3">
-    <label for="email" class="form-label">Email address</label>
+    <label for="email" class="form-label">$email</label>
     <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" value="$this->email">
-    <div id="emailHelp" class="form-text">Only needed as a contact info. We don't verify it.</div>
+    <div id="emailHelp" class="form-text">$emailHint</div>
   </div>
   <div class="mb-3 form-check">
     <input name="public-email" type="checkbox" class="form-check-input" id="public-email" value="1"$emailBox>
-    <label class="form-check-label" for=public-email>Make my email public</label>
+    <label class="form-check-label" for=public-email>$emailPublic</label>
   </div>
   <div class="mb-3 form-check">
     <input name="checkbox" type="checkbox" class="form-check-input" id="exampleCheck1" aria-describedby="exampleCheckHelp" value="1"$checkbox>
-    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-    <div id="exampleCheckHelp" class="form-text">It's purpose is completely unknown, apparently it does not do anything.</div>
+    <label class="form-check-label" for="exampleCheck1">$checkboxText</label>
+    <div id="exampleCheckHelp" class="form-text">$checkboxHint</div>
   </div>
   <button type="submit" class="btn btn-primary">$submitTitle</button>
 </form>
