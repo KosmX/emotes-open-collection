@@ -100,12 +100,13 @@ class AccountPage
             $buttonText .= '\'s ';
         }
         $buttonText .= "emotes ($r[emotes])";
+        $starred = Translatable::getTranslated("user.starred", array("count"=>$r["likes"]));
 
         $elements->addElement(new LiteralElement(<<<END
 <h1>$user->displayName</h1>
 <h5>$emailField</h5>
 <br>
-<i class="bi bi-star-fill"></i> Starred: $r[likes]
+<i class="bi bi-star-fill"></i> $starred
 <hr>
 <form method="get" action="/e">
 <input type="hidden" name="from" value="$user->userID">
@@ -166,16 +167,19 @@ END
             return \index_page::getIndex();
 
         }
+        $checkboxName = Translatable::getTranslated("delete_account_checkbox");
+        $checkboxDescription = Translatable::getTranslated("delete_account.description");
+        $deleteButton = Translatable::getTranslated("delete_account.button");
 
         $elements->addElement(new LiteralElement(<<<END
 
 <form method="post" action="/settings/delete">
   <div class="mb-3 form-check">
     <input name="checkbox" type="checkbox" class="form-check-input" id="exampleCheck1" aria-describedby="exampleCheckHelp" required>
-    <label class="form-check-label" for="exampleCheck1">I want to delete my account</label>
-    <div id="exampleCheckHelp" class="form-text">By deleting your account, every information will be permanently removed.</div>
+    <label class="form-check-label" for="exampleCheck1">$checkboxName</label>
+    <div id="exampleCheckHelp" class="form-text">$checkboxDescription</div>
   </div>
-  <button type="submit" class="btn btn-danger">Delete my account</button>
+  <button type="submit" class="btn btn-danger">$deleteButton</button>
 </form>
 END));
 
@@ -211,6 +215,7 @@ END));
                 $i++;
             }
 
+            $selectButton = Translatable::getTranslated("theme_button");
 
             $list->addElement(new LiteralElement(<<<END
 <form action="themes" method="post">
@@ -218,7 +223,7 @@ END));
     $options
 </select>
 <hr>
-<button type="submit" class="btn btn-success">Select theme!</button>
+<button type="submit" class="btn btn-success">$selectButton</button>
 </form>
 END
 ));
