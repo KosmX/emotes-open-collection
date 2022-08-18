@@ -7,6 +7,7 @@ use elements\IElement;
 use elements\LiteralElement;
 use elements\SimpleList;
 use emotes\Emote;
+use i18n\Translatable;
 use pageUtils\UserHelper;
 use routing\Method;
 use routing\Router;
@@ -123,7 +124,7 @@ END
             return Routes::NOT_FOUND;
         } else {
             UserHelper::logout();
-            return new LiteralElement("<h2>Goodbye!</h2>");
+            return new Translatable("logout_goodbye");
         }
     }
 
@@ -137,17 +138,17 @@ END
         $elements = new SimpleList();
         if (Method::POST->isActive()) {
             if($user->updateProfile()) {
-                $elements->addElement( new AlertTag(new LiteralElement("Successfully saved"), 'alert-success'));
+                $elements->addElement( new AlertTag(new Translatable("successful_save"), 'alert-success'));
             }
         }
 
 
-        $elements->addElement(new LiteralElement("<h1>Edit profile</h1>"));
+        $elements->addElement(new Translatable("edit_profile"));
         $elements->addElement($user->getForm('/settings/profile'));
 
         $elements->addElement(new LiteralElement("<hr>"));
 
-        $elements->addElement(new Button('/settings/delete', new LiteralElement("Delete user"), 'danger'));
+        $elements->addElement(new Button('/settings/delete', new Translatable("user_delete"), 'danger'));
 
         #$_SESSION['profEdit'] = serialize($user);
 
@@ -199,7 +200,7 @@ END));
                     getDB()->commit();
 
                 } else {
-                    $list->addElement(new AlertTag(new LiteralElement("Selected theme is invalid")));
+                    $list->addElement(new AlertTag(new Translatable("invalid_selected_theme")));
                 }
 
             }

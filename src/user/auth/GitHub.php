@@ -6,6 +6,7 @@ use elements\AlertTag;
 use elements\IElement;
 use elements\LiteralElement;
 use elements\SubmitConstantButton;
+use i18n\Translatable;
 use JetBrains\PhpStorm\ArrayShape;
 use pageUtils\UserHelper;
 
@@ -62,8 +63,8 @@ END
                 $result = json_decode($result, true);
                 if (isset($result['error'])) {
                     $msg = match ($result['error']){
-                        "incorrect_client_credentials" => "Server is failing GitHub authentication, please try another login method",
-                        "redirect_uri_mismatch" => "Someone wanted to redirect you to somewhere else. This is emotes.kosmx.dev",
+                        "incorrect_client_credentials" => Translatable::getTranslated("github_failing"),
+                        "redirect_uri_mismatch" => Translatable::getTranslated("redirect"),
                         "bad_verification_code" => $result['error_description'],
                         default => "Unknown error occurred:$result[error],$result[error_description]"
                     };
