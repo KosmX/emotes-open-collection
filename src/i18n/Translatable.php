@@ -60,7 +60,7 @@ class Translatable implements IElement
         if (isset($_COOKIE["language"])) {
             $lang = $_COOKIE['language'];
             if (array_key_exists(str_replace('_', '-', $lang), self::getTranslations())) {
-                return $lang;
+                return str_replace('-', '_', $lang);
             }
         }
         return "en_US";
