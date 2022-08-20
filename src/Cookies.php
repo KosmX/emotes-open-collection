@@ -32,7 +32,7 @@ function deleteAllCookies() {
     }
 }
 function accept() {
-    document.cookie = "enable_cookies=true";
+    document.cookie = "enable_cookies=true; expires=" + new Date(2147483647 * 1000).toUTCString();
     if ($redirectBool) { //inserted bool from PHP
         window.location.href = "/";
     } else {
@@ -40,8 +40,8 @@ function accept() {
     }
 }
 function deny() {
-    deleteAllCookies()
-    window.location.href = "/"
+    deleteAllCookies();
+    window.location.href = "/";
 }
 </script>
 END

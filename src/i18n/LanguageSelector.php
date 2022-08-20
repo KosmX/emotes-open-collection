@@ -40,8 +40,8 @@ function formSubmission() {
     const selectedValues = [].filter
        .call(form.options, option => option.selected)
        .map(option => option.value)[0];
-    document.cookie = "language=" + selectedValues;
-    document.location.href = '/'
+    document.cookie = "language=" + selectedValues + "; expires=" + new Date(2147483647 * 1000).toUTCString();
+    document.location.href = '/';
 }
 </script>
 <div>
