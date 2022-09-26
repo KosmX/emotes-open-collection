@@ -2,6 +2,16 @@
 if (isset($_COOKIE['enable_cookies'])) {
     session_name('EOCSession');
     session_start();
+    if (!isset($_SESSION['CSRF']) || unserialize($_SESSION['CSRF_AGE']) > time() + 86400) {
+        $token = random_bytes(64);
+        $_SESSION['CSRF'] = $token;
+        $available = time() + 86400;
+        $_SESSION['CSRF_AGE'] = serialize($available);
+        setcookie('CSRF', $token, [
+            'expires' => $available,
+            'samesite' => 'Strict'
+        ]);
+        }
 }
 
 include 'core.php';
@@ -14,6 +24,7 @@ include 'pageUtils/pageTemplateUtils.php';
 use elements\IElement;
 use elements\PageElement;
 use pageUtils\UserHelper;
+use routing\Method;
 use routing\Router;
 use routing\Routes;
 use user\AccountPage;
@@ -26,6 +37,20 @@ $current = '';
 if (str_starts_with($_SERVER['REQUEST_URI'], '//')) {
     print404();
     exit(0);
+}
+
+// -- Cross Site Request Forgery mitigation against POST requests
+
+include 'routing/Router.php';
+if (Method::POST->isActive()) {
+    if (!isset($_SESSION['CSRF'])) error(401); //probably no session
+    if (!isset($_COOKIE['CSRF'])) error(403);
+    if ($_COOKIE['CSRF'] != $_SESSION['CSRF']) error(406);
+} else if (isset($_SESSION['CSRF']) && !isset($_COOKIE['CSRF'])) {
+    setcookie('CSRF', $_SESSION['CSRF'], [
+        'expires' => unserialize($_SESSION['CSRF_AGE']),
+        'samesite' => 'Strict'
+    ]);
 }
 
 // -- end section -- //

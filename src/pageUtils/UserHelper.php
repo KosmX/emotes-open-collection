@@ -6,8 +6,6 @@ namespace pageUtils;
 use elements\IElement;
 use elements\LiteralElement;
 use i18n\Translatable;
-use user\auth\GitHub;
-use user\RegisterUser;
 
 class UserHelper
 {
@@ -144,6 +142,7 @@ FORM);
                 getDB()->commit();
                 $this->userID = $getIndex;
                 $_SESSION['user'] = serialize($this->userID);
+                session_regenerate_id();
                 return true;
             }
         } else {

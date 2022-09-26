@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use JetBrains\PhpStorm\NoReturn;
 use routing\Routes;
 
 /** This is CORE.php by KosmX
@@ -92,4 +93,10 @@ function redirect(string $path): Routes {
     global $headerSent;
     $headerSent = true;
     return Routes::SELF_SERVED;
+}
+
+#[NoReturn] function error(int $errorCode): void
+{
+    \notFound\print404($errorCode);
+    exit();
 }

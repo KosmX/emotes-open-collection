@@ -100,6 +100,7 @@ class RegisterUser
 
 
             if($res->num_rows == 1) { //User is already connected to this OAuth
+                session_regenerate_id();
                 $_SESSION['user'] = serialize($res->fetch_array()['userID']);
                 $_SESSION['authMode'] = $authName;
 
