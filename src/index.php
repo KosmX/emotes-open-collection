@@ -103,6 +103,9 @@ $R->get('~^$~')->action(function () {return index_page::getIndex();});
 $R->all('~^\\/e(motes)?(\\/|$)~')->action(function () use (&$current) {$current = 'emotes'; return \emotes\index::index();});
 
 $R->get('~^\\/lang$~')->action(function () {return \i18n\LanguageSelector::getLanguageScreen();});
+
+$R->get('~\\/guide(s)?(\\/|$)~')->action(function () {return \pages\PagesIndex::getPage();});
+
 $R->get('~^\\/cookies$~')->action(function () {return Cookies::getPageAtTarget(true);});
 
 $R->all('~^\\/admin(\\/|$)~')->action(function () {return \admin\index::index();});
