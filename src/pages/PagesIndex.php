@@ -46,7 +46,7 @@ END
         return new Container(new TranslationInsertable(<<<END
 
     <meta property="og:url" content="https://emotes.kosmx.dev/guide/logs" />
-    <meta content="logs" property="og:title" />
+    <meta content="Logs?" property="og:title" />
     <meta content="How to get minecraft logs" property="og:description" />
     <meta content="https://emotes.kosmx.dev/assets/logs/logs.png" property="og:image" />
     <!-- Image by Emotecraft community member ؞ n7💪🏼#0396 -->
