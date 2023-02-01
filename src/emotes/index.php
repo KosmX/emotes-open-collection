@@ -229,15 +229,17 @@ END
         if ($emote != null && ($emote->visibility >= 1 || UserHelper::getCurrentUser() != null && $emote->ownerID == UserHelper::getCurrentUser()->userID)) {
 
             $formatter = new EmoteDaemonClient();
-            $q = getDB()->prepare('SELECT data FROM emotes where id = ?');
+            $q = getDB()->prepare('SELECT data, name FROM emotes where id = ?');
             $q->bind_param('i', $emote->id);
             $q->execute();
-            $r = $q->get_result();
+            $r = $q->get_result()->fetch_array();
 
-            $formatter->addData($r->fetch_array()['data'], 1);
+            $name = htmlspecialchars($r['name']);
+            $formatter->addData($r['data'], 1);
             $r = $formatter->exchange(array(3));
             if (strlen($r[0]['data']) != 0) {
                 header("content-type: image/png");
+                header("Content-Disposition: attachment; filename=\"$name.png\"");
                 echo $r[0]['data'];
                 return Routes::SELF_SERVED;
             }
@@ -433,11 +435,14 @@ END
     {
         $emote = Emote::get((int)getUrlArray()[1]);
         if (Emote::canViewEmote($emote)) {
-            $q = getDB()->prepare('SELECT data FROM emotes where id = ?');
+            $q = getDB()->prepare('SELECT data, name FROM emotes where id = ?');
             $q->bind_param('i', $emote->id);
             $q->execute();
-            $r = $q->get_result()->fetch_array()['data'];
+            $array = $q->get_result()->fetch_array();
+            $r = $array['data'];
+            $name = htmlspecialchars($array['name']);
             header("content-type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=\"$name.emotecraft\"");
             echo $r;
             return Routes::SELF_SERVED;
         }
