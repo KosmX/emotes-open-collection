@@ -31,7 +31,7 @@ class index
         $R->get('~^\\d+\\/bin(\\/)?$~')->action(function () {return self::bin();});
         $R->get('~^\\d+\\/json(\\/)?$~')->action(function () {return self::json();});
         $R->get('~^\\d+\\/embed\\.json(\\/)?$~')->action(function () {return self::embed();});
-        $R->get('~^\\d+\\/icon\\.png$~')->action(function () {return self::getIcon(false);});
+        $R->get('~^\\d+\\/icon\\.png$~')->action(function () {return self::getIcon();});
 
         $R->all('~^my(\\/)?$~')->action(function () {return self::userEmotes();});
         $R->all('~^tmp(\\/)?$~')->action(function () {return self::unpublishedEmotes();});
@@ -222,7 +222,7 @@ END
 
     }
 
-    private static function getIcon(bool $fallback = true): Routes
+    private static function getIcon(): Routes
     {
         $id = (int)getUrlArray()[1];
         $emote = Emote::get($id);
@@ -245,7 +245,7 @@ END
             }
 
         }
-        if ($fallback) {
+        if (true) {
             header("content-type: image/svg+xml");
             echo <<<END
 <svg class="bd-placeholder-img img-fluid rounded-start" width="240" height="240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
