@@ -4,7 +4,6 @@
   "cookies": "<h1>Cookies</h1><br><h2>要使用这一功能，你必须首先接受cookies</h2>{$privacy}<br>没有第三方的cookies，只有必要的。<hr><h3>您是否希望接受Cookies？</h3>",
   "deny_cookies": "不接受Cookies",
   "go_back": "回去吧",
-  "index": "<h1>欢迎来到Emotes Open Collection!</h1>\n<hr>\n<h3>使用导航条进行搜索，或登录后上传你自己的表情!</h3>\n<small>这些动画在每个有最新mod的minecraft版本上都可以使用。</small>\n<hr>\n<br><br>\n<h3>仿真器mod</h3>\n<h5 style=\"margin-bottom: 0\"><a href=\"https://emotecraft.kosmx.dev/\">表情符号维基</a>\n</h5>\n<small>汪洋恣肆 <a href=\"https://github.com/Kale-Ko\">KaleKo</a></small>\n<br>\n<br>\n<h5><b>下载该模型:</b></h5>\n<ul>\n<li>CurseForge:\n    <ul>\n    <li><a href=\"https://www.curseforge.com/minecraft/mc-mods/emotecraft\">用于织物</a></li>\n    <li><a href=\"https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge/\">锻造厂</a></li>\n    </ul>\n</li>\n<li><a href=\"https://modrinth.com/mod/emotecraft\">Modrinth</a></>\n<li><a href=\"https://github.com/KosmX/emotes/releases\">GitHub</a></>\n</ul>\n<br><br>\n<hr>\n这个项目是开源的!<br>\n<a href=\"https://github.com/KosmX/emotes-open-collection\"><i class=\"bi bi-github\"></i></a><hr>\n运行无广告的网络服务不是免费的，如果你喜欢我的工作，请随时为我捐款\n<br>\n<div class=\"container\">\n    <div class=\"row row-cols-auto\">\n {$support}\n        <div class=\"col\">\n        如果可能的话，使用Ko-Fi，它需要的费用更少。\n        </div>\n    </div>\n</div>\n",
   "no": "不",
   "yes": "是",
   "logout_goodbye": "<h2>再见!</h2>",
