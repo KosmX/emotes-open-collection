@@ -4,7 +4,6 @@
   "cookies": "<h1>Cookies</h1><br><h2>要使用此功能，您必須先接受 Cookies</h2>{$privacy}<br>沒有第三方 Cookies，只有必要的。<hr><h3>您希望接受 Cookie 嗎？</h3>",
   "deny_cookies": "不接受 Cookie",
   "go_back": "回去",
-  "index": "<h1>歡迎來到 Emotes 公開收藏！</h1>\n<hr>\n<h3>使用導航欄搜索，或登錄上傳自己的表情！</h3>\n<small>動畫適用於每個帶有最新 mod 的 Minecraft 版本。</small>\n<hr>\n<br><br>\n<h3>Emotecraft 模組</h3>\n<h5 style=\"margin-bottom: 0\"><a href=\"https://emotecraft.kosmx.dev/\">Emotecraft Wiki</a> </h5>\n<small>wiki 由 <a href=\"https://github.com/Kale-Ko\">KaleKo</a></small> 製作\n<br>\n<br>\n<h5><b>下載模組：</b></h5>\n<ul>\n<li>詛咒鍛造：\n    <ul>\n    <li><a href=\"https://www.curseforge.com/minecraft/mc-mods/emotecraft\">用於織物</a></li>\n    <li><a href=\"https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge/\">for Forge</a></li>\n    </ul>\n</li>\n<li><a href=\"https://modrinth.com/mod/emotecraft\">Modrinth</a></>\n<li><a href=\"https://github.com/KosmX/emotes/releases\">GitHub</a></>\n</ul>\n<br><br>\n<hr>\n這個項目是開源的！<br>\n<a href=\"https://github.com/KosmX/emotes-open-collection\"><i class=\"bi bi-github\"></i></a>\n<hr>\n運行無廣告網絡服務不是免費的，如果您喜歡我的工作，請隨時捐贈我！\n<br>\n<div class=\"container\">\n    <div class=\"row row-cols-auto\">\n {$support}\n        <div class=\"col\">\n        如果可能的話，使用 Ko-Fi，它需要更少的費用。\n         </div>\n    </div>\n</div>\n",
   "no": "不",
   "yes": "是的",
   "logout_goodbye": "<h2>再見！</h2>",
