@@ -124,7 +124,7 @@ class index
 
         $page = getCurrentPage();
         $userButton = '';
-        $currentSearch = $_GET['s']?? '';
+        $currentSearch = htmlspecialchars($_GET['s']?? '');
         if (isset($_GET['from']) && ($user = UserHelper::getUserFromID((int)$_GET['from'])) != null) {
             $userButton = "<input type='hidden' name='from' value='$_GET[from]'>";
 

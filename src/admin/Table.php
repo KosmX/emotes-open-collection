@@ -79,6 +79,8 @@ class Table implements IElement
                     //var_dump($value);
                     if ($col['type'] == 'i') {
                         $value = (int)$value;
+                    } else {
+                        $value = htmlspecialchars_decode($value);
                     }
                     $tmp[] = $value;
 
@@ -133,7 +135,7 @@ class Table implements IElement
             foreach ($this->cols as $item) {
                 if ($item['type'] == 'b') continue; //We can not edit blobs
                 $name = $item['name'];
-                $val = $row[$name];
+                $val = htmlspecialchars($row[$name]);
                 $rowStr .= <<<END
 <td><input type="text" value="$val" name="$name" class="form-control"></td>
 END;
