@@ -1,1 +1,27 @@
-{}
+{
+  "accept_cookies": "Cookies кабул итү",
+  "asd": "XYZ",
+  "deny_cookies": "Cookies кабул итмәү",
+  "index.emotecraft_mod": "Emotecraft моды",
+  "index.emotecraft_wiki": "Emotecraft викисе",
+  "index.cf.for_fabric": "Fabric өчен",
+  "index.cf.for_forge": "Forge өчен",
+  "logout_goodbye": "<h2>Сау булыгыз!</h2>",
+  "successful_save": "Сакланды",
+  "save": "Саклау",
+  "saved": "Сакланды",
+  "emotes.edit.description": "Тасвирлама:",
+  "emotes.edit.author": "Автор:",
+  "nav.user": "Аккаунт",
+  "nav.user.logout": "Чыгу",
+  "page.logs.button.official": "Рәсми Minecraft лаунчеры",
+  "page.logs.button.curseforge": "CurseForge лаунчеры",
+  "page.logs.button.prism": "MultiMC яки PrismLauncher",
+  "page.logs.button.at": "ATLauncher",
+  "page.logs.button.gd": "GDLauncher",
+  "page.logs.title.official": "Рәсми Minecraft лаунчеры",
+  "page.logs.title.curseforge": "CurseForge лаунчеры",
+  "page.logs.title.prism": "MultiMC яки PrismLauncher",
+  "page.logs.title.at": "ATLauncher",
+  "page.logs.title.gd": "GDLauncher"
+}
